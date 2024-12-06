@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /procesar.js
+Disallow: /app.js
+
+Sitemap: https://ivanclas.github.io/DONA-MASCHKA-DE-TQM-JAEN/sitemap.xml
