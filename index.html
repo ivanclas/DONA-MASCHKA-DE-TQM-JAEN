@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doña Maschka - Bienvenido</title>
+    <!-- Iconos de Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Estilos globales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f3e9; /* Fondo de página en marrón claro */
+            color: #333;
+            min-height: 100vh;
+        }
+        /* Ocultar contenido principal hasta que el usuario inicie sesión */
+        #main-content {
+            display: none;
+            padding-top: 80px; /* Añadido para compensar el menú fijo */
+        }
+        /* Sign-in Screen */
+        #sign-in-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5e8d8; /* Fondo de pantalla de inicio de sesión */
+            text-align: center;
+            padding: 20px;
+        }
+        #sign-in-screen h1 {
+            font-size: 36px;
+            color: #a0522d; /* Marrón oscuro */
+            margin-bottom: 20px;
+        }
+        #sign-in-screen p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        /* Navbar */
+        .navbar {
+            width: 100%;
+            background-color: #a0522d; /* Marrón oscuro para la barra de navegación */
+            padding: 15px 20px;
+            position: fixed; /* Menú fijo */
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+        .navbar .logo {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .navbar .logo i {
+            margin-right: 8px;
+        }
+        .navbar-menu {
+            list-style: none;
+            display: flex;
+            gap: 10px;
+        }
+        .navbar-menu li a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        .navbar-menu li a:hover {
+            background-color: #8b4513; /* Un tono más oscuro de marrón */
+        }
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .hamburger-menu span {
+            height: 3px;
+            width: 25px;
+            background-color: white;
+            margin: 4px 0;
+        }
+        /* Dropdown Menu for Mobile */
+        .dropdown-menu {
+            display: none;
+            flex-direction: column;
+            background-color: #a0522d; /* Mismo marrón oscuro */
+            position: absolute;
+            top: 60px; /* Ajustado para el menú fijo */
+            left: 0;
+            width: 100%;
+            padding: 0;
+            z-index: 1000;
+        }
+        .dropdown-menu.active {
+            display: flex;
+        }
+        .dropdown-menu li {
+            width: 100%;
+        }
+        .dropdown-menu li a {
+            display: block;
+            color: white;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            text-align: center;
+            border-top: 1px solid #8b4513;
+            border-bottom: 1px solid #8b4513;
+        }
+        .dropdown-menu li:first-child a {
+            border-top: none;
+        }
+        .dropdown-menu li:last-child a {
+            border-bottom: none;
+        }
+        .dropdown-menu li a:hover {
+            background-color: #8b4513;
+        }
+        /* Header */
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            background-image: url('ruta-de-tu-imagen-header.jpg'); /* Añade la ruta de tu imagen de encabezado */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            position: relative;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(165, 42, 42, 0.7); /* Overlay marrón oscuro */
+            z-index: 1;
+        }
+        header h1, header p {
+            position: relative;
+            z-index: 2;
+        }
+        header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 20px;
+        }
+        /* Secciones */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            background-color: #fffaf0; /* Fondo crema claro */
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+        }
+        .section h2 {
+            color: #a0522d; /* Marrón oscuro */
+            font-size: 22px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .section p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            text-align: center;
+        }
+        .section img {
+            width: 100%;
+            max-width: 300px; /* Establece un ancho máximo para las imágenes */
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Botón Google */
+        .button-google {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #db4437;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .button-google:hover {
+            background-color: #c23321;
+        }
+        .button-google i {
+            font-size: 18px;
+        }
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f5e8d8; /* Fondo del footer */
+            font-size: 14px;
+            color: #666;
+            margin-top: auto;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-menu {
+                display: none;
+            }
+            .hamburger-menu {
+                display: flex;
+            }
+        }
+        @media (min-width: 769px) {
+            .dropdown-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sign-in Screen -->
+    <div id="sign-in-screen">
+        <h1>Bienvenido a Doña Maschka</h1>
+        <p>Por favor, inicia sesión con Google para continuar.</p>
+        <button class="button-google" onclick="signInWithGoogle()">
+            <i class="fab fa-google"></i> Iniciar Sesión con Google
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-hat-cowboy"></i> Doña Maschka
+            </div>
+            <div class="hamburger-menu" onclick="toggleDropdown(event)">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <!-- Menú normal para computadoras -->
+            <ul class="navbar-menu">
+                <li><a href="#nosotros"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
+                <li><a href="#mision"><i class="fas fa-bullseye"></i> Misión</a></li>
+                <li><a href="#vision"><i class="fas fa-eye"></i> Visión</a></li>
+                <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
+                <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
+            </ul>
+            <!-- Menú desplegable para móviles -->
+            <ul class="dropdown-menu">
+                <li><a href="#nosotros"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
+                <li><a href="#mision"><i class="fas fa-bullseye"></i> Misión</a></li>
+                <li><a href="#vision"><i class="fas fa-eye"></i> Visión</a></li>
+                <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
+                <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
+            </ul>
+        </nav>
+
+        <!-- Header -->
+        <header>
+            <h1 id="welcome-message">Bienvenido</h1>
+            <p>Productos de calidad para el bienestar de todos</p>
+        </header>
+
+        <!-- Contenido -->
+        <div class="container">
+            <section id="nosotros" class="section">
+                <h2>Sobre Nosotros</h2>
+                <img src="NOSOTROS.png" alt="Sobre Nosotros">
+                <p>En Doña Maschka, estamos comprometidos con ofrecer productos de calidad que mejoren la vida de nuestros clientes. Con años de experiencia en el mercado, nuestra misión es llevar lo mejor a cada hogar.</p>
+            </section>
+
+            <section id="mision" class="section">
+                <h2>Misión</h2>
+                <img src="mision.jpg" alt="Nuestra Misión">
+                <p>Nuestra misión es satisfacer las necesidades de nuestros clientes a través de productos innovadores, manteniendo siempre un compromiso con la calidad y el bienestar.</p>
+            </section>
+
+            <section id="vision" class="section">
+                <h2>Visión</h2>
+                <img src="vision.jpg" alt="Nuestra Visión">
+                <p>Ser reconocidos como una empresa líder en el sector, destacándonos por la calidad de nuestros productos y nuestro compromiso con el bienestar de la comunidad.</p>
+            </section>
+
+            <section id="catalogo" class="section">
+                <h2>Catálogo</h2>
+                <img src="catalogo.jpg" alt="Catálogo de Productos">
+                <p>Explora nuestros productos y encuentra aquello que necesitas. Haz clic en el botón de abajo para ver nuestro catálogo completo.</p>
+                <a href="catalago.html" class="button-google">
+                    <i class="fas fa-box"></i> Ver Catálogo
+                </a>
+            </section>
+
+            <section id="contacto" class="section">
+                <h2>Contacto</h2>
+                <img src="contacto.jpg" alt="Contacto">
+                <p>¿Tienes preguntas o quieres saber más sobre nuestros productos? No dudes en contactarnos a través de nuestro número de teléfono.</p>
+                <p>Teléfono: 947 424 087</p>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            &copy; 2024 Doña Maschka. Todos los derechos reservados.
+        </footer>
+    </div>
+
+    <!-- Firebase App (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <!-- Iconos de Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+       const firebaseConfig = {
+            apiKey: "AIzaSyBP3bJR_DA6EuV66Sze0vHLfo8QKNJ5_IQ",
+            authDomain: "machka-8432e.firebaseapp.com",
+            projectId: "machka-8432e",
+            storageBucket: "machka-8432e.appspot.com",
+            messagingSenderId: "421528005263",
+            appId: "1:421528005263:web:df708ddf04377600c55efa",
+            measurementId: "G-89B7M13GTS"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Función para iniciar sesión con Google
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    // Ocultar la pantalla de inicio de sesión y mostrar el contenido principal
+                    document.getElementById('sign-in-screen').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    // Actualizar el encabezado con el nombre del usuario
+                    const welcomeMessage = document.getElementById('welcome-message');
+                    welcomeMessage.textContent = "Bienvenido, " + result.user.displayName;
+                })
+                .catch((error) => {
+                    console.error("Error al iniciar sesión con Google: ", error);
+                });
+        }
+
+        // Monitorear el estado de autenticación
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Usuario ha iniciado sesión
+                document.getElementById('sign-in-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                const welcomeMessage = document.getElementById('welcome-message');
+                welcomeMessage.textContent = "Bienvenido, " + user.displayName;
+            } else {
+                // Usuario no ha iniciado sesión
+                document.getElementById('sign-in-screen').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+            }
+        });
+
+        // Función para togglear el menú en dispositivos móviles
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const menu = document.querySelector('.dropdown-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Cerrar el menú al seleccionar una opción en móviles
+        const menuItems = document.querySelectorAll('.dropdown-menu li a');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const menu = document.querySelector('.dropdown-menu');
+                menu.classList.remove('active');
+            });
+        });
+
+        // Cerrar el menú al hacer clic fuera de él en móviles
+        document.addEventListener('click', function(event) {
+            const menu = document.querySelector('.dropdown-menu');
+            const hamburger = document.querySelector('.hamburger-menu');
+            if (menu.classList.contains('active') && !menu.contains(event.target) && !hamburger.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
