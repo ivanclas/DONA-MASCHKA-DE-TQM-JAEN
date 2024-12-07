@@ -1,3 +1,4 @@
+// Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBP3bJR_DA6EuV66Sze0vHLfo8QKNJ5_IQ",
     authDomain: "machka-8432e.firebaseapp.com",
@@ -17,40 +18,103 @@ let products = [];
 let cart = [];
 let userEmail = '';
 let userName = '';
+let userType = localStorage.getItem('userType') || '';
 
-// Verificar el estado de autenticación
-auth.onAuthStateChanged(user => {
-    if (user) {
-        const userNameElement = document.getElementById('user-name');
-        userNameElement.textContent = user.displayName;
-        userEmail = user.email;
-        userName = user.displayName;
-
-        // Cargar el carrito del usuario
-        loadCartFromFirestore();
-
-        // Cargar el catálogo
+// Verificar el estado de autenticación al cargar la página
+window.onload = function() {
+    if (userType === 'google') {
+        // Manejar autenticación con Google
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                userName = user.displayName;
+                userEmail = user.email;
+                localStorage.setItem('userName', userName);
+                document.getElementById('user-name').textContent = userName;
+                loadCartFromFirestore();
+                loadCatalog();
+            } else {
+                // Usuario no ha iniciado sesión con Google
+                clearSession();
+            }
+        });
+    } else if (userType === 'username') {
+        // Manejar autenticación con nombre de usuario
+        userName = localStorage.getItem('userName') || 'Usuario';
+        document.getElementById('user-name').textContent = userName;
+        loadCartFromLocalStorage();
         loadCatalog();
     } else {
         // Usuario no ha iniciado sesión
-        window.location.href = 'index.html'; 
+        window.location.href = 'index.html';
     }
-});
 
+    // Configurar el buscador
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
+};
+
+// Función para iniciar sesión con Google
+function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            // Guardar tipo de usuario y nombre
+            localStorage.setItem('userType', 'google');
+            localStorage.setItem('userName', result.user.displayName);
+            userType = 'google';
+            userName = result.user.displayName;
+            userEmail = result.user.email;
+            document.getElementById('user-name').textContent = userName;
+            loadCartFromFirestore();
+            loadCatalog();
+        })
+        .catch((error) => {
+            console.error("Error al iniciar sesión con Google: ", error);
+            alert("Error al iniciar sesión con Google. Por favor, inténtalo de nuevo.");
+        });
+}
+
+// Función para mostrar el modal de ingreso de nombre de usuario
+function showUsernameModal() {
+    document.getElementById('username-modal').style.display = 'block';
+}
+
+// Función para iniciar sesión con nombre de usuario
+function signInWithUsername() {
+    const username = document.getElementById('username-input').value.trim();
+    if (username === "") {
+        alert("Por favor, ingresa un nombre de usuario.");
+        return;
+    }
+    // Guardar tipo de usuario y nombre en localStorage
+    localStorage.setItem('userType', 'username');
+    localStorage.setItem('userName', username);
+    userType = 'username';
+    userName = username;
+    document.getElementById('user-name').textContent = userName;
+    // Cerrar modal
+    document.getElementById('username-modal').style.display = 'none';
+    // Cargar carrito desde localStorage
+    loadCartFromLocalStorage();
+    // Cargar catálogo
+    loadCatalog();
+}
+
+// Función para cargar el carrito desde Firestore (Usuarios de Google)
 async function loadCartFromFirestore() {
     try {
         const cartDoc = await firestore.collection('carts').doc(userEmail).get();
         if (cartDoc.exists) {
             cart = cartDoc.data().items;
-            updateCart();
         } else {
             cart = [];
         }
+        updateCartUI();
     } catch (error) {
         console.error("Error al cargar el carrito desde Firestore:", error);
     }
 }
 
+// Función para guardar el carrito en Firestore (Usuarios de Google)
 async function saveCartToFirestore() {
     try {
         await firestore.collection('carts').doc(userEmail).set({
@@ -61,6 +125,23 @@ async function saveCartToFirestore() {
     }
 }
 
+// Función para cargar el carrito desde localStorage (Usuarios con Username)
+function loadCartFromLocalStorage() {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+        cart = JSON.parse(storedCart);
+    } else {
+        cart = [];
+    }
+    updateCartUI();
+}
+
+// Función para guardar el carrito en localStorage (Usuarios con Username)
+function saveCartToLocalStorage() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Función para cargar el catálogo de productos
 async function loadCatalog() {
     const catalogContainer = document.getElementById('catalogContainer');
     catalogContainer.innerHTML = ''; 
@@ -80,6 +161,7 @@ async function loadCatalog() {
     }
 }
 
+// Función para renderizar el catálogo en el DOM
 function renderCatalog(filteredProducts) {
     const catalogContainer = document.getElementById('catalogContainer');
     catalogContainer.innerHTML = ''; 
@@ -99,9 +181,9 @@ function renderCatalog(filteredProducts) {
             <div class="catalog-details">
                 <h3>${product.nombre}</h3>
                 <p>Precio: S/ ${product.precio}</p>
-                <button class="add-to-cart-btn" onclick="window.addToCart('${productIdEscaped}', '${productNameEscaped}', ${product.precio}, '${productImageUrlEscaped}', this)">Agregar al Carrito</button>
-                <button class="view-details-btn" onclick="window.openProductModal('${productIdEscaped}', '${productNameEscaped}', ${product.precio}, '${productImageUrlEscaped}', '${productDescriptionEscaped}')">Ver Detalles</button>
-                <button class="share-btn" onclick="window.shareProduct('${productIdEscaped}', '${productNameEscaped}', ${product.precio}, '${productImageUrlEscaped}')">Compartir <i class="fas fa-share-alt"></i></button>
+                <button class="add-to-cart-btn" onclick="addToCart('${productIdEscaped}', '${productNameEscaped}', ${product.precio}, '${productImageUrlEscaped}', this)">Agregar al Carrito</button>
+                <button class="view-details-btn" onclick="openProductModal('${productIdEscaped}', '${productNameEscaped}', ${product.precio}, '${productImageUrlEscaped}', '${productDescriptionEscaped}')">Ver Detalles</button>
+                <button class="share-btn" onclick="shareProduct('${productIdEscaped}', '${productNameEscaped}', ${product.precio}, '${productImageUrlEscaped}')">Compartir <i class="fas fa-share-alt"></i></button>
             </div>
         `;
 
@@ -109,6 +191,7 @@ function renderCatalog(filteredProducts) {
     });
 }
 
+// Función para manejar la búsqueda en el catálogo
 function handleSearch() {
     const searchInput = document.getElementById('searchInput').value.toLowerCase();
     const filteredProducts = products.filter(product => 
@@ -118,6 +201,7 @@ function handleSearch() {
     renderCatalog(filteredProducts);
 }
 
+// Función para agregar un producto al carrito
 function addToCart(productId, name, price, imageUrl, button) {
     const decodedName = decodeURIComponent(name);
     const decodedImageUrl = decodeURIComponent(imageUrl);
@@ -141,11 +225,12 @@ function addToCart(productId, name, price, imageUrl, button) {
         }, 2000);
     }
 
-    updateCart();
-    saveCartToFirestore();
+    updateCartUI();
+    saveCart();
 }
 
-function updateCart() {
+// Función para actualizar la interfaz del carrito
+function updateCartUI() {
     const cartItemsContainer = document.getElementById('cartItems');
     const totalPriceElement = document.getElementById('totalPrice');
     const cartButtonNotification = document.getElementById('cartButtonNotification');
@@ -167,11 +252,11 @@ function updateCart() {
                 <h4>${item.name}</h4>
                 <p>Precio: S/ ${item.price.toFixed(2)}</p>
                 <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="window.changeQuantity(${index}, -1)">-</button>
+                    <button class="quantity-btn" onclick="changeQuantity(${index}, -1)">-</button>
                     <span>${item.quantity}</span>
-                    <button class="quantity-btn" onclick="window.changeQuantity(${index}, 1)">+</button>
+                    <button class="quantity-btn" onclick="changeQuantity(${index}, 1)">+</button>
                 </div>
-                <button class="remove-btn" onclick="window.removeFromCart(${index})">Eliminar</button>
+                <button class="remove-btn" onclick="removeFromCart(${index})">Eliminar</button>
             </div>
         `;
         cartItemsContainer.appendChild(cartItem);
@@ -190,32 +275,43 @@ function updateCart() {
     totalPriceElement.textContent = `Total: S/ ${totalWithDiscount.toFixed(2)}`;
     cartButtonNotification.textContent = totalQuantity;
     cartButtonNotification.style.display = totalQuantity > 0 ? 'flex' : 'none';
-
-    localStorage.setItem('cart', JSON.stringify(cart));
 }
 
+// Función para cambiar la cantidad de un producto en el carrito
 function changeQuantity(index, amount) {
     const product = cart[index];
     product.quantity += amount;
     if (product.quantity <= 0) {
         removeFromCart(index);
     } else {
-        updateCart();
-        saveCartToFirestore();
+        updateCartUI();
+        saveCart();
     }
 }
 
+// Función para eliminar un producto del carrito
 function removeFromCart(index) {
     cart.splice(index, 1);
-    updateCart();
-    saveCartToFirestore();
+    updateCartUI();
+    saveCart();
 }
 
+// Función para guardar el carrito según el tipo de usuario
+function saveCart() {
+    if (userType === 'google') {
+        saveCartToFirestore();
+    } else if (userType === 'username') {
+        saveCartToLocalStorage();
+    }
+}
+
+// Función para alternar el modal del carrito
 function toggleCartModal() {
     const cartModal = document.getElementById('cartModal');
     cartModal.classList.toggle('show');
 }
 
+// Función para abrir el modal de detalles del producto
 function openProductModal(productId, name, price, imageUrl, description) {
     const modal = document.getElementById('productModal');
     const modalName = document.getElementById('modalProductName');
@@ -268,11 +364,13 @@ function openProductModal(productId, name, price, imageUrl, description) {
     modal.classList.add('show');
 }
 
+// Función para cerrar el modal de producto
 function toggleProductModal() {
     const modal = document.getElementById('productModal');
     modal.classList.remove('show');
 }
 
+// Función para enviar el pedido vía WhatsApp
 function sendOrderViaWhatsApp() {
     if (cart.length === 0) {
         alert("El carrito está vacío.");
@@ -305,6 +403,7 @@ function sendOrderViaWhatsApp() {
     window.open(whatsappUrl, '_blank');
 }
 
+// Función para compartir un producto vía WhatsApp
 function shareProduct(productId, name, price, imageUrl) {
     const productUrl = `https://tusitio.com/catalogo.html?productId=${productId}`;
     const message = `¡Mira este producto de Doña Maschka! 🛍️\n\nProducto: ${decodeURIComponent(name)}\nPrecio: S/ ${price}\n\nPuedes verlo aquí: ${productUrl}`;
@@ -312,6 +411,7 @@ function shareProduct(productId, name, price, imageUrl) {
     window.open(whatsappUrl, '_blank');
 }
 
+// Función para cerrar modales al hacer clic fuera de ellos
 window.addEventListener('click', function(event) {
     const cartModal = document.getElementById('cartModal');
     const productModal = document.getElementById('productModal');
@@ -323,11 +423,59 @@ window.addEventListener('click', function(event) {
     }
 });
 
-window.addEventListener('load', () => {
-    document.getElementById('searchInput').addEventListener('input', handleSearch);
-});
+// Función para cerrar dropdowns y modales al hacer clic fuera
+window.onclick = function(event) {
+    // Cerrar dropdown de usuario
+    if (!event.target.matches('.user-icon') && !event.target.closest('.user-icon')) {
+        const dropdown = document.getElementById('user-dropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
+    }
+    // Cerrar dropdown de menú móvil
+    if (!event.target.matches('.hamburger-menu') && !event.target.closest('.hamburger-menu')) {
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu.classList.contains('active')) {
+            dropdownMenu.classList.remove('active');
+        }
+    }
+    // Cerrar modal de nombre de usuario si se hace clic fuera
+    const usernameModal = document.getElementById('username-modal');
+    if (usernameModal && usernameModal.style.display === 'block' && !event.target.closest('.modal-content')) {
+        usernameModal.style.display = 'none';
+    }
+};
 
-// Exponer funciones globalmente
+// Función para cerrar sesión
+function signOut() {
+    if (userType === 'google') {
+        auth.signOut().then(() => {
+            clearSession();
+        }).catch((error) => {
+            console.error("Error al cerrar sesión:", error);
+            alert("Error al cerrar sesión. Por favor, inténtalo de nuevo.");
+        });
+    } else if (userType === 'username') {
+        clearSession();
+    }
+}
+
+// Función para limpiar la sesión
+function clearSession() {
+    localStorage.removeItem('userType');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('cart');
+    userType = '';
+    userName = '';
+    userEmail = '';
+    // Redirigir a la página de inicio
+    window.location.href = 'index.html';
+}
+
+// Asignar funciones globalmente para que sean accesibles desde el HTML
+window.signInWithGoogle = signInWithGoogle;
+window.showUsernameModal = showUsernameModal;
+window.signInWithUsername = signInWithUsername;
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.removeFromCart = removeFromCart;
@@ -336,4 +484,4 @@ window.openProductModal = openProductModal;
 window.toggleProductModal = toggleProductModal;
 window.sendOrderViaWhatsApp = sendOrderViaWhatsApp;
 window.shareProduct = shareProduct;
-window.handleSearch = handleSearch;
+window.signOut = signOut;
