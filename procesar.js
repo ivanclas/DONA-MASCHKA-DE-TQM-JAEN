@@ -9,7 +9,7 @@ const firebaseConfig = {
     measurementId: "G-89B7M13GTS"
 };
 
-// Inicializar Firebase (asegurarse de que no se inicialice más de una vez)
+// Inicializar Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -21,7 +21,6 @@ function signInWithGoogle() {
     auth.signInWithPopup(provider)
         .then((result) => {
             const userName = result.user.displayName;
-            // Guardar información del usuario en localStorage
             localStorage.setItem('userType', 'google');
             localStorage.setItem('userName', userName);
             showMainContent(userName);
@@ -41,13 +40,11 @@ function showUsernameModal() {
 function signInWithUsername() {
     const username = document.getElementById('username-input').value.trim();
     if (!username) {
-        alert("Por favor, ingresa un nombre de usuario.");
+        alert("Por favor, ingresa un nombre de usuario válido.");
         return;
     }
-    // Guardar en localStorage
     localStorage.setItem('userType', 'username');
     localStorage.setItem('userName', username);
-    // Cerrar modal y mostrar contenido principal
     document.getElementById('username-modal').style.display = 'none';
     showMainContent(username);
 }
@@ -56,7 +53,6 @@ function signInWithUsername() {
 function showMainContent(userName) {
     document.getElementById('sign-in-screen').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
-    // Actualizar mensaje de bienvenida
     document.getElementById('welcome-message').innerText = `Bienvenido, ${userName}`;
 }
 
@@ -101,26 +97,34 @@ function toggleDropdown(event) {
 
 // Cerrar los dropdowns si se hace clic fuera
 window.onclick = function (event) {
-    // Cerrar dropdown de usuario
-    if (!event.target.matches('.user-icon') && !event.target.matches('.user-icon *')) {
-        const dropdown = document.getElementById('user-dropdown');
-        if (dropdown) {
-            dropdown.style.display = 'none';
-        }
-    }
-    // Cerrar dropdown de menú móvil
-    if (!event.target.matches('.hamburger-menu') && !event.target.matches('.hamburger-menu *')) {
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        if (dropdownMenu.classList.contains('active')) {
-            dropdownMenu.classList.remove('active');
-        }
-    }
-    // Cerrar modal si se hace clic fuera de él
+    const dropdown = document.getElementById('user-dropdown');
+    const dropdownMenu = document.querySelector('.dropdown-menu');
     const modal = document.getElementById('username-modal');
+
+    if (!event.target.closest('.user-icon') && dropdown) {
+        dropdown.style.display = 'none';
+    }
+
+    if (!event.target.closest('.hamburger-menu') && dropdownMenu?.classList.contains('active')) {
+        dropdownMenu.classList.remove('active');
+    }
+
     if (modal && modal.style.display === 'block' && !event.target.closest('.modal-content')) {
         modal.style.display = 'none';
     }
 };
+
+// Cerrar el modal al presionar la tecla Esc
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
+    }
+});
 
 // Monitorear el estado de autenticación de Firebase
 auth.onAuthStateChanged(user => {
