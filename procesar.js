@@ -13,155 +13,152 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-let currentUser = null; // Guardará el nombre del usuario (si no es Google)
-let signedInWithGoogle = false;
-
 // Función para iniciar sesión con Google
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
         .then((result) => {
-            signedInWithGoogle = true;
-            hideSignInScreen(result.user.displayName);
+            // Guardar información del usuario en localStorage
+            localStorage.setItem('userType', 'google');
+            localStorage.setItem('userName', result.user.displayName);
+            showMainContent();
         })
         .catch((error) => {
-            console.error("Error al iniciar sesión con Google:", error);
+            console.error("Error al iniciar sesión con Google: ", error);
+            alert("Error al iniciar sesión con Google. Por favor, inténtalo de nuevo.");
         });
 }
 
-// Monitorear el estado de autenticación
-auth.onAuthStateChanged((user) => {
-    if (user && signedInWithGoogle) {
-        hideSignInScreen(user.displayName);
-    }
-});
-
-// Muestra la pantalla de inicio de sesión
-function showSignInScreen() {
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('sign-in-screen').style.display = 'flex';
-    document.getElementById('welcome-message').textContent = "Bienvenido";
-    updateUserDropdown();
+// Función para mostrar el modal de ingreso de nombre de usuario
+function showUsernameModal() {
+    document.getElementById('username-modal').style.display = 'block';
 }
 
-// Oculta la pantalla de inicio de sesión y muestra el contenido principal
-function hideSignInScreen(name) {
+// Función para iniciar sesión con nombre de usuario
+function signInWithUsername() {
+    const username = document.getElementById('username-input').value.trim();
+    if (username === "") {
+        alert("Por favor, ingresa un nombre de usuario.");
+        return;
+    }
+    // Guardar en localStorage
+    localStorage.setItem('userType', 'username');
+    localStorage.setItem('userName', username);
+    // Cerrar modal
+    document.getElementById('username-modal').style.display = 'none';
+    showMainContent();
+}
+
+// Función para mostrar el contenido principal
+function showMainContent() {
     document.getElementById('sign-in-screen').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
-    document.getElementById('welcome-message').textContent = "Bienvenido, " + name;
-    updateUserDropdown();
-}
-
-// Muestra el modal para ingresar el nombre de usuario
-function showUsernameModal() {
-    document.getElementById('username-modal').style.display = 'flex';
-}
-
-// Establece el nombre de usuario cuando se presiona "Aceptar"
-function setUsername() {
-    const usernameInput = document.getElementById('username-input');
-    const name = usernameInput.value.trim();
-    if (name) {
-        currentUser = name;
-        signedInWithGoogle = false;
-        document.getElementById('username-modal').style.display = 'none';
-        hideSignInScreen(name);
-    } else {
-        alert("Por favor, ingresa un nombre de usuario.");
-    }
-}
-
-// Función para togglear el menú principal en dispositivos móviles
-function toggleDropdown(event) {
-    event.stopPropagation();
-    const menu = document.querySelector('.dropdown-menu');
-    if (menu) menu.classList.toggle('active');
-}
-
-// Función para togglear el menú de usuario
-function toggleUserDropdown(event) {
-    event.stopPropagation();
-    const userMenu = document.querySelector('.user-dropdown');
-    if (userMenu) userMenu.classList.toggle('active');
-}
-
-// Actualiza el menú del usuario según el estado de inicio de sesión
-function updateUserDropdown() {
-    const userMenu = document.querySelector('.user-dropdown');
-    userMenu.innerHTML = '';
-
-    if (!signedInWithGoogle && !currentUser) {
-        // Usuario no ha iniciado sesión
-        userMenu.innerHTML = `
-            <li><a href="#" onclick="signInWithGoogleOption()">Iniciar Sesión con Google</a></li>
-            <li><a href="#" onclick="continueWithoutAccountOption()">Continuar sin cuenta</a></li>
-        `;
-    } else if (signedInWithGoogle) {
-        // Usuario con Google
-        const userName = auth.currentUser ? auth.currentUser.displayName : "Usuario";
-        userMenu.innerHTML = `
-            <li><a href="#">Sesión Google: ${userName}</a></li>
-            <li><a href="#" onclick="signOut()">Cerrar Sesión</a></li>
-        `;
-    } else if (currentUser) {
-        // Usuario sin cuenta
-        userMenu.innerHTML = `
-            <li><a href="#">Usuario: ${currentUser}</a></li>
-            <li><a href="#" onclick="signOut()">Cerrar Sesión</a></li>
-        `;
-    }
-}
-
-// Opciones del menú de usuario
-function signInWithGoogleOption() {
-    signInWithGoogle();
-}
-
-function continueWithoutAccountOption() {
-    showUsernameModal();
+    // Actualizar mensaje de bienvenida
+    const userName = localStorage.getItem('userName');
+    document.getElementById('welcome-message').innerText = `Bienvenido, ${userName}`;
 }
 
 // Función para cerrar sesión
-function signOut() {
-    if (signedInWithGoogle) {
+function signOutUser() {
+    const userType = localStorage.getItem('userType');
+    if (userType === 'google') {
         auth.signOut().then(() => {
-            signedInWithGoogle = false;
-            currentUser = null;
-            showSignInScreen();
+            clearSession();
+        }).catch((error) => {
+            console.error("Error al cerrar sesión:", error);
+            alert("Error al cerrar sesión. Por favor, inténtalo de nuevo.");
         });
     } else {
-        currentUser = null;
-        showSignInScreen();
+        clearSession();
     }
 }
 
-// Cerrar menús al hacer clic fuera
-document.addEventListener('click', function(event) {
+// Función para limpiar la sesión
+function clearSession() {
+    localStorage.removeItem('userType');
+    localStorage.removeItem('userName');
+    document.getElementById('main-content').style.display = 'none';
+    document.getElementById('sign-in-screen').style.display = 'flex';
+    document.getElementById('welcome-message').innerText = 'Bienvenido';
+    // Opcional: Limpiar cualquier otro dato relacionado con el usuario
+}
+
+// Función para alternar el menú desplegable del usuario
+function toggleUserDropdown() {
+    const dropdown = document.getElementById('user-dropdown');
+    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+}
+
+// Función para alternar el menú desplegable en móviles
+function toggleDropdown(event) {
+    event.stopPropagation();
     const menu = document.querySelector('.dropdown-menu');
-    const userMenu = document.querySelector('.user-dropdown');
-    const hamburger = document.querySelector('.hamburger-menu');
-    const userIcon = document.querySelector('.user-icon');
+    menu.classList.toggle('active');
+}
 
-    if (menu && menu.classList.contains('active') && !menu.contains(event.target) && !hamburger.contains(event.target)) {
-        menu.classList.remove('active');
+// Cerrar los dropdowns si se hace clic fuera
+window.onclick = function(event) {
+    // Cerrar dropdown de usuario
+    if (!event.target.matches('.user-icon') && !event.target.matches('.user-icon *')) {
+        const dropdown = document.getElementById('user-dropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
     }
+    // Cerrar dropdown de menú móvil
+    if (!event.target.matches('.hamburger-menu') && !event.target.matches('.hamburger-menu *')) {
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu.classList.contains('active')) {
+            dropdownMenu.classList.remove('active');
+        }
+    }
+    // Cerrar modal si se hace clic fuera de él
+    const modal = document.getElementById('username-modal');
+    if (modal && modal.style.display === 'block' && !event.target.closest('.modal-content')) {
+        modal.style.display = 'none';
+    }
+}
 
-    if (userMenu && userMenu.classList.contains('active') && !userMenu.contains(event.target) && !userIcon.contains(event.target)) {
-        userMenu.classList.remove('active');
+// Monitorear el estado de autenticación de Firebase
+auth.onAuthStateChanged(user => {
+    if (user) {
+        // Usuario ha iniciado sesión con Google
+        localStorage.setItem('userType', 'google');
+        localStorage.setItem('userName', user.displayName);
+        showMainContent();
+    } else {
+        // Usuario no ha iniciado sesión con Google
+        const userType = localStorage.getItem('userType');
+        const userName = localStorage.getItem('userName');
+        if (userType && userName) {
+            // Usuario ha iniciado sesión sin Google
+            showMainContent();
+        } else {
+            // Usuario no ha iniciado sesión
+            document.getElementById('sign-in-screen').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'none';
+        }
     }
 });
 
-// Exponer funciones globalmente
+// Verificar si el usuario ya ha iniciado sesión al cargar la página
+window.onload = function() {
+    const userType = localStorage.getItem('userType');
+    const userName = localStorage.getItem('userName');
+    if (userType && userName) {
+        showMainContent();
+    }
+}
+
+// Función para cerrar sesión desde el dropdown de usuario
+function signOut() {
+    signOutUser();
+}
+
+// Asignar funciones globalmente para que sean accesibles desde el HTML
 window.signInWithGoogle = signInWithGoogle;
+window.showUsernameModal = showUsernameModal;
+window.signInWithUsername = signInWithUsername;
 window.toggleDropdown = toggleDropdown;
 window.toggleUserDropdown = toggleUserDropdown;
-window.signInWithGoogleOption = signInWithGoogleOption;
-window.continueWithoutAccountOption = continueWithoutAccountOption;
 window.signOut = signOut;
-window.showUsernameModal = showUsernameModal;
-window.setUsername = setUsername;
-
-// Inicializar estado del menú al cargar
-document.addEventListener('DOMContentLoaded', function() {
-    updateUserDropdown();
-});
