@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doña Maschka - Catálogo de Productos</title>
    
-    <!-- Iconos de Font Awesome -->
+    <!-- Iconos de Font Awesome (Solo CSS) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
@@ -517,6 +517,38 @@
      
 </head>
 <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-hat-cowboy"></i> Doña Maschka
+        </div>
+        <div class="hamburger-menu" onclick="toggleDropdown(event)">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <!-- Menú normal para computadoras -->
+        <ul class="navbar-menu">
+            <li><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="catalogo.html"><i class="fas fa-box"></i> Catálogo</a></li>
+            <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
+        </ul>
+        <!-- Menú desplegable para móviles -->
+        <ul class="dropdown-menu">
+            <li><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="catalogo.html"><i class="fas fa-box"></i> Catálogo</a></li>
+            <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
+        </ul>
+        <!-- Icono de Usuario -->
+        <div class="user-icon" onclick="toggleUserDropdown()">
+            <i class="fas fa-user-circle"></i>
+            <div class="user-dropdown" id="user-dropdown">
+                <a href="#" onclick="signOut()">Cerrar Sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Encabezado -->
     <div class="header">
         <h1>Catálogo de Productos</h1>
         <div id="welcome-message">Bienvenido, <span id="user-name"></span></div>
@@ -530,7 +562,7 @@
         <i class="fab fa-whatsapp"></i>
     </button>
 
-    <button id="cartButton" onclick="window.toggleCartModal()">
+    <button id="cartButton" onclick="toggleCartModal()">
         🛒
         <span id="cartButtonNotification">0</span>
     </button>
@@ -542,15 +574,15 @@
             <div id="cartItems"></div>
             <p id="discountInfo"></p>
             <p id="totalPrice">Total: S/ 0.00</p>
-            <button class="whatsapp-btn" onclick="window.sendOrderViaWhatsApp()">Pedir por WhatsApp</button>
-            <button class="remove-btn" onclick="window.toggleCartModal()">Cerrar</button>
+            <button class="whatsapp-btn" onclick="sendOrderViaWhatsApp()">Pedir por WhatsApp</button>
+            <button class="remove-btn" onclick="toggleCartModal()">Cerrar</button>
         </div>
     </div>
 
     <!-- Modal de detalles del producto -->
     <div id="productModal">
         <div class="product-modal-content">
-            <span class="close-btn" onclick="window.toggleProductModal()">&times;</span>
+            <span class="close-btn" onclick="toggleProductModal()">&times;</span>
             <img id="modalProductImage" src="" alt="Imagen del Producto">
             <h3 id="modalProductName">Nombre del Producto</h3>
             <p id="modalProductPrice">Precio: S/ 0.00</p>
@@ -567,9 +599,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <!-- Iconos de Font Awesome -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    
+    <!-- Iconos de Font Awesome (Solo CSS, ya incluido arriba) -->
+    <!-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
+
     <!-- Tu archivo JS separado -->
     <script src="app.js"></script>
 </body>
