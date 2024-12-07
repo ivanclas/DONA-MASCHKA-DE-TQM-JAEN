@@ -4,729 +4,511 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doña Maschka - Catálogo de Productos</title>
-   
-    <!-- Iconos de Font Awesome (Solo CSS) -->
+
+    <!-- Iconos de Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-    /* Estilos globales */
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f7f3e9; /* Fondo de página en marrón claro */
-        margin: 0;
-        padding: 0;
-        color: #333;
-        overflow-x: hidden; /* Evitar desbordamiento horizontal */
-    }
+        /* Incluye aquí los estilos que tengas para el catálogo,
+           el buscador, los modales, etc.
+           (Los mismos que tenías en tu `catalogo.html` antes)
+        */
 
-    * {
-        box-sizing: border-box; /* Asegurar que padding y border se incluyan en el tamaño total */
-    }
-
-    /* Navbar */
-    .navbar {
-        width: 100%;
-        background-color: #a0522d; /* Marrón oscuro para la barra de navegación */
-        padding: 15px 20px;
-        position: fixed; /* Menú fijo */
-        top: 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 1000;
-    }
-    .navbar .logo {
-        color: white;
-        font-size: 22px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-    }
-    .navbar .logo i {
-        margin-right: 8px;
-    }
-    .navbar-menu {
-        list-style: none;
-        display: flex;
-        gap: 10px;
-    }
-    .navbar-menu li a {
-        color: white;
-        text-decoration: none;
-        font-size: 14px;
-        padding: 8px 12px;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    .navbar-menu li a:hover {
-        background-color: #8b4513; /* Un tono más oscuro de marrón */
-    }
-    /* Usuario Icono */
-    .user-icon {
-        color: white;
-        font-size: 20px;
-        cursor: pointer;
-        position: relative;
-    }
-    /* Dropdown Menu Usuario */
-    .user-dropdown {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 50px;
-        background-color: #a0522d;
-        border: 1px solid #8b4513;
-        border-radius: 5px;
-        overflow: hidden;
-        z-index: 1001;
-        min-width: 150px;
-    }
-    .user-dropdown a {
-        display: block;
-        color: white;
-        padding: 10px 20px;
-        text-decoration: none;
-    }
-    .user-dropdown a:hover {
-        background-color: #8b4513;
-    }
-    /* Hamburger Menu */
-    .hamburger-menu {
-        display: none;
-        flex-direction: column;
-        cursor: pointer;
-        padding: 10px;
-    }
-    .hamburger-menu span {
-        height: 3px;
-        width: 25px;
-        background-color: white;
-        margin: 4px 0;
-        transition: 0.4s;
-    }
-    /* Dropdown Menu para móviles */
-    .dropdown-menu {
-        display: none;
-        flex-direction: column;
-        background-color: #a0522d; /* Mismo marrón oscuro */
-        position: absolute;
-        top: 60px; /* Ajustado para el menú fijo */
-        left: 0;
-        width: 100%;
-        padding: 0;
-        z-index: 1000;
-    }
-    .dropdown-menu.active {
-        display: flex;
-    }
-    .dropdown-menu li {
-        width: 100%;
-    }
-    .dropdown-menu li a {
-        display: block;
-        color: white;
-        padding: 15px 20px;
-        text-decoration: none;
-        font-size: 16px;
-        text-align: center;
-        border-top: 1px solid #8b4513;
-        border-bottom: 1px solid #8b4513;
-    }
-    .dropdown-menu li:first-child a {
-        border-top: none;
-    }
-    .dropdown-menu li:last-child a {
-        border-bottom: none;
-    }
-    .dropdown-menu li a:hover {
-        background-color: #8b4513;
-    }
-
-    /* Encabezado */
-    .header {
-        margin-top: 80px; /* Para compensar la barra de navegación fija */
-        text-align: center;
-        padding: 50px 20px;
-        background-image: url('ruta-de-tu-imagen-header.jpg'); /* Añade la ruta de tu imagen de encabezado */
-        background-size: cover;
-        background-position: center;
-        color: white;
-        position: relative;
-    }
-    .header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(165, 42, 42, 0.7); /* Overlay marrón oscuro */
-        z-index: 1;
-    }
-    .header h1, .header p {
-        position: relative;
-        z-index: 2;
-    }
-    .header h1 {
-        font-size: 36px;
-        margin-bottom: 10px;
-    }
-    .header p {
-        font-size: 20px;
-    }
-
-    /* Estilos del mensaje de bienvenida */
-    #welcome-message {
-        font-size: 20px;
-        color: #a0522d;
-        margin-bottom: 15px;
-        text-align: center;
-    }
-
-    /* Estilos del buscador */
-    #searchContainer {
-        width: 100%;
-        max-width: 600px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: center;
-    }
-
-    #searchInput {
-        width: 100%;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 30px;
-        font-size: 16px;
-        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-    }
-
-    #searchInput:focus {
-        border-color: #a0522d; /* Marrón oscuro */
-        outline: none;
-        box-shadow: inset 0 0 8px rgba(160, 82, 45, 0.5);
-    }
-
-    /* Contenedor del catálogo */
-    #catalogContainer {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-        width: 100%;
-        max-width: 1000px;
-        padding: 20px;
-        margin-top: 20px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* Elementos del catálogo */
-    .catalog-item {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-    }
-
-    .catalog-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-    }
-
-    .catalog-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        max-width: 100%;
-    }
-
-    .catalog-details {
-        padding: 15px;
-        text-align: center;
-    }
-
-    .catalog-details h3 {
-        font-size: 18px;
-        margin-bottom: 10px;
-        color: #a0522d;
-    }
-
-    .catalog-details p {
-        font-size: 16px;
-        margin-bottom: 10px;
-        color: #777;
-    }
-
-    .add-to-cart-btn,
-    .share-btn,
-    .view-details-btn {
-        background-color: #a0522d;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 10px 15px;
-        cursor: pointer;
-        font-size: 14px;
-        width: 90%;
-        margin-top: 10px;
-        transition: background-color 0.3s ease;
-    }
-
-    .add-to-cart-btn:hover,
-    .share-btn:hover,
-    .view-details-btn:hover {
-        background-color: #8b4513;
-    }
-
-    /* Botones flotantes */
-    #cartButton {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: #D2B48C;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 55px;
-        height: 55px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-        z-index: 100;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
-
-    #cartButton:hover {
-        transform: scale(1.1);
-    }
-
-    #whatsappButton {
-        position: fixed;
-        bottom: 85px;
-        right: 20px;
-        background-color: #25D366;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 55px;
-        height: 55px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-        z-index: 100;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
-
-    #whatsappButton:hover {
-        transform: scale(1.1);
-    }
-
-    #cartButtonNotification {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background-color: red;
-        color: white;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-    }
-
-    /* Modales */
-    #cartModal,
-    #productModal,
-    #usernameModal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-
-    #cartModal.show,
-    #productModal.show,
-    #usernameModal.show {
-        display: flex;
-    }
-
-    #cartModalContent,
-    .product-modal-content,
-    #usernameModalContent {
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        width: 85%;
-        max-width: 400px;
-        overflow-y: auto;
-        position: relative;
-        max-height: 80%;
-        margin: 20px auto;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f3e9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            overflow-x: hidden;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        * {
+            box-sizing: border-box;
         }
-    }
 
-    .close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 24px;
-        cursor: pointer;
-        color: #777;
-        transition: color 0.3s ease;
-    }
+        .header {
+            background-color: #f7f3e9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 0; /* Sin navbar, no necesitas margin-top */
+        }
 
-    .close-btn:hover {
-        color: #a0522d;
-    }
+        .header h1 {
+            font-size: 32px;
+            color: #a0522d;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-align: center;
+            margin: 0;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
 
-    .product-modal-content {
-        text-align: center;
-    }
+        #welcome-message {
+            font-size: 20px;
+            color: #a0522d;
+            margin-bottom: 15px;
+            text-align: center;
+        }
 
-    .product-modal-content img {
-        width: 100%;
-        max-width: 300px;
-        height: auto;
-        margin-bottom: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
+        #searchContainer {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
 
-    .product-modal-content h3 {
-        font-size: 26px;
-        margin-bottom: 10px;
-        color: #a0522d;
-    }
+        #searchInput {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
 
-    .product-modal-content p {
-        font-size: 20px;
-        margin-bottom: 15px;
-        color: #555;
-    }
+        #searchInput:focus {
+            border-color: #a0522d;
+            outline: none;
+            box-shadow: inset 0 0 8px rgba(160, 82, 45, 0.5);
+        }
 
-    .product-modal-content ul {
-        list-style-type: disc;
-        padding-left: 20px;
-        margin-bottom: 20px;
-        text-align: left;
-    }
-
-    .product-modal-content ul li {
-        font-size: 16px;
-        margin-bottom: 8px;
-        color: #555;
-    }
-
-    .product-modal-content .modal-buttons,
-    #usernameModalContent .modal-buttons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .product-modal-content .modal-buttons button,
-    #usernameModalContent .modal-buttons button {
-        width: 80%;
-        padding: 12px;
-        font-size: 16px;
-        border-radius: 25px;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .product-modal-content .modal-buttons .add-to-cart-btn {
-        background-color: #a0522d;
-        color: white;
-    }
-
-    .product-modal-content .modal-buttons .add-to-cart-btn:hover {
-        background-color: #8b4513;
-    }
-
-    .product-modal-content .modal-buttons .share-btn {
-        background-color: #25D366;
-        color: white;
-    }
-
-    .product-modal-content .modal-buttons .share-btn:hover {
-        background-color: #1EBE5A;
-    }
-
-    /* Modal de Nombre de Usuario */
-    #usernameModalContent h2 {
-        font-size: 24px;
-        margin-bottom: 15px;
-        text-align: center;
-        color: #a0522d;
-    }
-
-    #usernameModalContent input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 16px;
-        margin-bottom: 15px;
-        transition: border-color 0.3s ease;
-    }
-
-    #usernameModalContent input:focus {
-        border-color: #a0522d;
-        outline: none;
-        box-shadow: 0 0 5px rgba(160, 82, 45, 0.5);
-    }
-
-    #usernameModalContent .modal-buttons button {
-        background-color: #a0522d;
-        color: white;
-    }
-
-    #usernameModalContent .modal-buttons button:hover {
-        background-color: #8b4513;
-    }
-
-    /* Estilos del carrito */
-    .cart-item {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 15px;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .cart-item:last-child {
-        border-bottom: none;
-    }
-
-    .cart-image {
-        width: 70px;
-        height: 70px;
-        border-radius: 10px;
-        object-fit: cover;
-    }
-
-    .cart-details {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .cart-details h4 {
-        font-size: 18px;
-        margin: 0;
-        color: #333;
-    }
-
-    .cart-details p {
-        font-size: 16px;
-        margin: 5px 0;
-        color: #777;
-    }
-
-    .quantity-controls {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 5px;
-    }
-
-    .quantity-btn {
-        background-color: #a0522d;
-        border: none;
-        color: white;
-        border-radius: 50%;
-        width: 35px;
-        height: 35px;
-        font-size: 18px;
-        cursor: pointer;
-    }
-
-    .quantity-btn:hover {
-        background-color: #8b4513;
-    }
-
-    .remove-btn {
-        background-color: #ff4d4d;
-        border: none;
-        color: white;
-        border-radius: 8px;
-        padding: 8px 15px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-
-    .remove-btn:hover {
-        background-color: #e60000;
-    }
-
-    #totalPrice {
-        margin-top: 15px;
-        font-size: 20px;
-        font-weight: bold;
-        text-align: right;
-    }
-
-    #cartModalContent h2 {
-        font-size: 24px;
-        margin-bottom: 15px;
-        text-align: center;
-    }
-
-    .modal-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 20px;
-    }
-
-    .whatsapp-btn {
-        background-color: #25D366;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 10px;
-        font-size: 17px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-    }
-
-    .whatsapp-btn:hover {
-        background-color: #1EBE5A;
-    }
-
-    /* Responsivo */
-    @media (max-width: 800px) {
         #catalogContainer {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 600px) {
-        #catalogContainer {
-            grid-template-columns: 1fr;
-            padding: 10px 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            margin-top: 20px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        .header {
-            padding: 10px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
-
-        #searchInput {
-            padding: 10px;
-        }
-
-        #cartModalContent,
-        .product-modal-content,
-        #usernameModalContent {
-            width: 90%;
-            max-width: 400px;
-            margin: 30px auto;
-            max-height: 70%;
-            padding: 25px;
-        }
-
-        .product-modal-content img {
-            max-width: 250px;
-        }
-
         .catalog-item {
-            margin: 10px 0;
-            padding: 10px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
 
-        /* Mostrar el hamburger menu en móviles */
-        .hamburger-menu {
+        .catalog-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .catalog-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            max-width: 100%;
+        }
+
+        .catalog-details {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .catalog-details h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #a0522d;
+        }
+
+        .catalog-details p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #777;
+        }
+
+        .add-to-cart-btn,
+        .share-btn,
+        .view-details-btn {
+            background-color: #a0522d;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 90%;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover,
+        .share-btn:hover,
+        .view-details-btn:hover {
+            background-color: #8b4513;
+        }
+
+        #cartButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #D2B48C;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #cartButton:hover {
+            transform: scale(1.1);
+        }
+
+        #whatsappButton {
+            position: fixed;
+            bottom: 85px;
+            right: 20px;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #whatsappButton:hover {
+            transform: scale(1.1);
+        }
+
+        #cartButtonNotification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        #cartModal,
+        #productModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        #cartModal.show,
+        #productModal.show {
             display: flex;
         }
 
-        /* Ocultar el menú de navegación en móviles */
-        .navbar-menu {
-            display: none;
+        #cartModalContent,
+        .product-modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 400px;
+            overflow-y: auto;
+            position: relative;
+            max-height: 80%;
+            margin: 20px auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease;
         }
-    }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #a0522d;
+        }
+
+        .product-modal-content {
+            text-align: center;
+        }
+
+        .product-modal-content img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-modal-content h3 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            color: #a0522d;
+        }
+
+        .product-modal-content p {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .product-modal-content ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .product-modal-content ul li {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .product-modal-content .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-modal-content .modal-buttons button {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .product-modal-content .modal-buttons .add-to-cart-btn {
+            background-color: #a0522d;
+            color: white;
+        }
+
+        .product-modal-content .modal-buttons .add-to-cart-btn:hover {
+            background-color: #8b4513;
+        }
+
+        .product-modal-content .modal-buttons .share-btn {
+            background-color: #25D366;
+            color: white;
+        }
+
+        .product-modal-content .modal-buttons .share-btn:hover {
+            background-color: #1EBE5A;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .cart-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cart-details h4 {
+            font-size: 18px;
+            margin: 0;
+            color: #333;
+        }
+
+        .cart-details p {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #777;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .quantity-btn {
+            background-color: #a0522d;
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .quantity-btn:hover {
+            background-color: #8b4513;
+        }
+
+        .remove-btn {
+            background-color: #ff4d4d;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .remove-btn:hover {
+            background-color: #e60000;
+        }
+
+        #totalPrice {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        #cartModalContent h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px;
+            font-size: 17px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #1EBE5A;
+        }
+
+        @media (max-width: 800px) {
+            #catalogContainer {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            #catalogContainer {
+                grid-template-columns: 1fr;
+                padding: 10px 20px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .header {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+                margin-bottom: 5px;
+            }
+
+            #searchInput {
+                padding: 10px;
+            }
+
+            #cartModalContent,
+            .product-modal-content {
+                width: 90%;
+                max-width: 400px;
+                margin: 30px auto;
+                max-height: 70%;
+                padding: 25px;
+            }
+
+            .product-modal-content img {
+                max-width: 250px;
+            }
+
+            .catalog-item {
+                margin: 10px 0;
+                padding: 10px;
+            }
+        }
     </style>
-     
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo">
-            <i class="fas fa-hat-cowboy"></i> Doña Maschka
-        </div>
-        <div class="hamburger-menu" onclick="toggleDropdown(event)">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <!-- Menú normal para computadoras -->
-        <ul class="navbar-menu">
-            <li><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
-            <li><a href="catalogo.html"><i class="fas fa-box"></i> Catálogo</a></li>
-            <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
-        </ul>
-        <!-- Menú desplegable para móviles -->
-        <ul class="dropdown-menu">
-            <li><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
-            <li><a href="catalogo.html"><i class="fas fa-box"></i> Catálogo</a></li>
-            <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
-        </ul>
-        <!-- Icono de Usuario -->
-        <div class="user-icon" onclick="toggleUserDropdown()">
-            <i class="fas fa-user-circle"></i>
-            <div class="user-dropdown" id="user-dropdown">
-                <a href="#" onclick="signOut()">Cerrar Sesión</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Encabezado -->
     <div class="header">
         <h1>Catálogo de Productos</h1>
         <div id="welcome-message">Bienvenido, <span id="user-name"></span></div>
@@ -734,13 +516,14 @@
             <input type="text" id="searchInput" placeholder="Buscar por nombre o precio...">
         </div>
     </div>
+
     <div id="catalogContainer"></div>
 
     <button id="whatsappButton" onclick="window.open('https://api.whatsapp.com/send?phone=51947424087', '_blank')">
         <i class="fab fa-whatsapp"></i>
     </button>
 
-    <button id="cartButton" onclick="toggleCartModal()">
+    <button id="cartButton" onclick="window.toggleCartModal()">
         🛒
         <span id="cartButtonNotification">0</span>
     </button>
@@ -752,15 +535,15 @@
             <div id="cartItems"></div>
             <p id="discountInfo"></p>
             <p id="totalPrice">Total: S/ 0.00</p>
-            <button class="whatsapp-btn" onclick="sendOrderViaWhatsApp()">Pedir por WhatsApp</button>
-            <button class="remove-btn" onclick="toggleCartModal()">Cerrar</button>
+            <button class="whatsapp-btn" onclick="window.sendOrderViaWhatsApp()">Pedir por WhatsApp</button>
+            <button class="remove-btn" onclick="window.toggleCartModal()">Cerrar</button>
         </div>
     </div>
 
     <!-- Modal de detalles del producto -->
     <div id="productModal">
         <div class="product-modal-content">
-            <span class="close-btn" onclick="toggleProductModal()">&times;</span>
+            <span class="close-btn" onclick="window.toggleProductModal()">&times;</span>
             <img id="modalProductImage" src="" alt="Imagen del Producto">
             <h3 id="modalProductName">Nombre del Producto</h3>
             <p id="modalProductPrice">Precio: S/ 0.00</p>
@@ -773,25 +556,13 @@
         </div>
     </div>
 
-    <!-- Modal de Ingreso de Nombre de Usuario -->
-    <div id="usernameModal">
-        <div id="usernameModalContent">
-            <span class="close-btn" onclick="toggleUsernameModal()">&times;</span>
-            <h2>Ingresa tu Nombre de Usuario</h2>
-            <input type="text" id="username-input" placeholder="Nombre de Usuario">
-            <div class="modal-buttons">
-                <button class="add-to-cart-btn" onclick="signInWithUsername()">Ingresar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Firebase App (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <!-- Iconos de Font Awesome (Solo CSS, ya incluido arriba) -->
-    <!-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
-
+    <!-- Iconos de Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    
     <!-- Tu archivo JS separado -->
     <script src="app.js"></script>
 </body>
