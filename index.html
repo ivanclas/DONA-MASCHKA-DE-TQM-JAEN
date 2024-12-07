@@ -16,29 +16,27 @@
         }
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f3e9; /* Fondo de página en marrón claro */
+            background-color: #f7f3e9;
             color: #333;
             min-height: 100vh;
         }
-        /* Ocultar contenido principal hasta que el usuario inicie sesión */
         #main-content {
             display: none;
-            padding-top: 80px; /* Añadido para compensar el menú fijo */
+            padding-top: 80px;
         }
-        /* Sign-in Screen */
         #sign-in-screen {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #f5e8d8; /* Fondo de pantalla de inicio de sesión */
+            background-color: #f5e8d8;
             text-align: center;
             padding: 20px;
         }
         #sign-in-screen h1 {
             font-size: 36px;
-            color: #a0522d; /* Marrón oscuro */
+            color: #a0522d;
             margin-bottom: 20px;
         }
         #sign-in-screen p {
@@ -46,12 +44,33 @@
             color: #555;
             margin-bottom: 30px;
         }
-        /* Navbar */
+        .button-google {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #db4437;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .button-google:hover {
+            background-color: #c23321;
+        }
+        .button-google i {
+            font-size: 18px;
+        }
         .navbar {
             width: 100%;
-            background-color: #a0522d; /* Marrón oscuro para la barra de navegación */
+            background-color: #a0522d;
             padding: 15px 20px;
-            position: fixed; /* Menú fijo */
+            position: fixed;
             top: 0;
             display: flex;
             justify-content: space-between;
@@ -81,9 +100,8 @@
             border-radius: 5px;
         }
         .navbar-menu li a:hover {
-            background-color: #8b4513; /* Un tono más oscuro de marrón */
+            background-color: #8b4513;
         }
-        /* Hamburger Menu */
         .hamburger-menu {
             display: none;
             flex-direction: column;
@@ -96,25 +114,24 @@
             background-color: white;
             margin: 4px 0;
         }
-        /* Dropdown Menu for Mobile */
-        .dropdown-menu {
+        .dropdown-menu, .user-dropdown {
             display: none;
             flex-direction: column;
-            background-color: #a0522d; /* Mismo marrón oscuro */
+            background-color: #a0522d;
             position: absolute;
-            top: 60px; /* Ajustado para el menú fijo */
+            top: 60px;
             left: 0;
             width: 100%;
             padding: 0;
             z-index: 1000;
         }
-        .dropdown-menu.active {
+        .dropdown-menu.active, .user-dropdown.active {
             display: flex;
         }
-        .dropdown-menu li {
+        .dropdown-menu li, .user-dropdown li {
             width: 100%;
         }
-        .dropdown-menu li a {
+        .dropdown-menu li a, .user-dropdown li a {
             display: block;
             color: white;
             padding: 15px 20px;
@@ -124,20 +141,21 @@
             border-top: 1px solid #8b4513;
             border-bottom: 1px solid #8b4513;
         }
-        .dropdown-menu li:first-child a {
+        .dropdown-menu li:first-child a,
+        .user-dropdown li:first-child a {
             border-top: none;
         }
-        .dropdown-menu li:last-child a {
+        .dropdown-menu li:last-child a,
+        .user-dropdown li:last-child a {
             border-bottom: none;
         }
-        .dropdown-menu li a:hover {
+        .dropdown-menu li a:hover, .user-dropdown li a:hover {
             background-color: #8b4513;
         }
-        /* Header */
         header {
             text-align: center;
             padding: 50px 20px;
-            background-image: url('ruta-de-tu-imagen-header.jpg'); /* Añade la ruta de tu imagen de encabezado */
+            background-image: url('ruta-de-tu-imagen-header.jpg');
             background-size: cover;
             background-position: center;
             color: white;
@@ -150,7 +168,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(165, 42, 42, 0.7); /* Overlay marrón oscuro */
+            background-color: rgba(165, 42, 42, 0.7);
             z-index: 1;
         }
         header h1, header p {
@@ -164,20 +182,19 @@
         header p {
             font-size: 20px;
         }
-        /* Secciones */
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
         }
         .section {
-            background-color: #fffaf0; /* Fondo crema claro */
+            background-color: #fffaf0;
             padding: 20px;
             margin: 20px 0;
             border-radius: 12px;
         }
         .section h2 {
-            color: #a0522d; /* Marrón oscuro */
+            color: #a0522d;
             font-size: 22px;
             margin-bottom: 15px;
             text-align: center;
@@ -190,7 +207,7 @@
         }
         .section img {
             width: 100%;
-            max-width: 300px; /* Establece un ancho máximo para las imágenes */
+            max-width: 300px;
             height: auto;
             border-radius: 12px;
             margin-bottom: 20px;
@@ -198,39 +215,73 @@
             margin-left: auto;
             margin-right: auto;
         }
-        /* Botón Google */
-        .button-google {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 20px;
-            font-size: 16px;
-            color: white;
-            background-color: #db4437;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 20px;
-            justify-content: center;
-        }
-        .button-google:hover {
-            background-color: #c23321;
-        }
-        .button-google i {
-            font-size: 18px;
-        }
-        /* Footer */
         footer {
             text-align: center;
             padding: 20px;
-            background-color: #f5e8d8; /* Fondo del footer */
+            background-color: #f5e8d8;
             font-size: 14px;
             color: #666;
             margin-top: auto;
         }
-        /* Responsive */
+        /* Usuario Icon */
+        .user-icon {
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+            margin-left: 20px;
+        }
+
+        /* Modal para ingresar nombre */
+        #username-modal {
+            display: none;
+            position: fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.5);
+            justify-content:center;
+            align-items:center;
+            z-index:2000;
+        }
+
+        #username-modal-content {
+            background:white;
+            padding:20px;
+            border-radius:12px;
+            width:90%;
+            max-width:400px;
+            text-align:center;
+        }
+
+        #username-modal-content h2 {
+            margin-bottom:15px;
+            color:#a0522d;
+        }
+
+        #username-modal-content input {
+            width:100%;
+            padding:10px;
+            margin-bottom:15px;
+            border:1px solid #ccc;
+            border-radius:8px;
+        }
+
+        #username-modal-content button {
+            background-color:#a0522d;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+        #username-modal-content button:hover {
+            background-color:#8b4513;
+        }
+
         @media (max-width: 768px) {
             .navbar-menu {
                 display: none;
@@ -243,21 +294,42 @@
             .dropdown-menu {
                 display: none;
             }
+            .user-dropdown {
+                position:absolute;
+                right:20px;
+                top:60px;
+                width:auto;
+            }
+            .user-dropdown li a {
+                text-align:left;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Sign-in Screen -->
+    <!-- Pantalla de inicio -->
     <div id="sign-in-screen">
         <h1>Bienvenido a Doña Maschka</h1>
         <p>Por favor, inicia sesión con Google para continuar.</p>
         <button class="button-google" onclick="signInWithGoogle()">
             <i class="fab fa-google"></i> Iniciar Sesión con Google
         </button>
+        <button class="button-google" onclick="showUsernameModal()">
+            Continuar sin cuenta
+        </button>
     </div>
 
-    <!-- Main Content -->
+    <!-- Modal para ingresar nombre de usuario -->
+    <div id="username-modal">
+        <div id="username-modal-content">
+            <h2>Ingresa tu nombre de usuario</h2>
+            <input type="text" id="username-input" placeholder="Tu nombre">
+            <button onclick="setUsername()">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
     <div id="main-content">
         <!-- Navbar -->
         <nav class="navbar">
@@ -269,7 +341,6 @@
                 <span></span>
                 <span></span>
             </div>
-            <!-- Menú normal para computadoras -->
             <ul class="navbar-menu">
                 <li><a href="#nosotros"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
                 <li><a href="#mision"><i class="fas fa-bullseye"></i> Misión</a></li>
@@ -277,13 +348,13 @@
                 <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
                 <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
             </ul>
-            <!-- Menú desplegable para móviles -->
-            <ul class="dropdown-menu">
-                <li><a href="#nosotros"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
-                <li><a href="#mision"><i class="fas fa-bullseye"></i> Misión</a></li>
-                <li><a href="#vision"><i class="fas fa-eye"></i> Visión</a></li>
-                <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
-                <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
+
+            <!-- Icono de usuario con menú desplegable -->
+            <div class="user-icon" onclick="toggleUserDropdown(event)">
+                <i class="fas fa-user"></i>
+            </div>
+            <ul class="user-dropdown">
+                <!-- Estas opciones se actualizarán dinámicamente según el estado del usuario -->
             </ul>
         </nav>
 
@@ -342,7 +413,6 @@
     <!-- Iconos de Font Awesome -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
-    <!-- Tu archivo JS separado -->
     <script src="procesar.js"></script>
 </body>
 </html>
