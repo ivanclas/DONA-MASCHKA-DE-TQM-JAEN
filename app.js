@@ -1,4 +1,3 @@
-// Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBP3bJR_DA6EuV66Sze0vHLfo8QKNJ5_IQ",
     authDomain: "machka-8432e.firebaseapp.com",
@@ -22,161 +21,25 @@ let userName = '';
 // Verificar el estado de autenticación
 auth.onAuthStateChanged(user => {
     if (user) {
-        // Usuario ha iniciado sesión con Google
+        const userNameElement = document.getElementById('user-name');
+        userNameElement.textContent = user.displayName;
         userEmail = user.email;
         userName = user.displayName;
-        localStorage.setItem('userEmail', userEmail);
-        localStorage.setItem('userName', userName);
-        updateWelcomeMessage(userName);
+
+        // Cargar el carrito del usuario
         loadCartFromFirestore();
+
+        // Cargar el catálogo
         loadCatalog();
-        updateUserDropdown();
-    } else if (localStorage.getItem('userName')) {
-        // Usuario ha iniciado sesión sin cuenta (nombre de usuario)
-        userName = localStorage.getItem('userName');
-        updateWelcomeMessage(userName);
-        loadCartFromFirestore();
-        loadCatalog();
-        updateUserDropdown();
     } else {
         // Usuario no ha iniciado sesión
-        showSignInScreen();
+        window.location.href = 'index.html'; 
     }
 });
 
-// Función para iniciar sesión con Google
-function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .then((result) => {
-            // Ya manejado en onAuthStateChanged
-        })
-        .catch((error) => {
-            console.error("Error al iniciar sesión con Google:", error);
-        });
-}
-
-// Muestra la pantalla de inicio de sesión
-function showSignInScreen() {
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('sign-in-screen').style.display = 'flex';
-    document.getElementById('welcome-message').textContent = "Bienvenido";
-    updateUserDropdown();
-}
-
-// Oculta la pantalla de inicio de sesión y muestra el contenido principal
-function hideSignInScreen(name) {
-    document.getElementById('sign-in-screen').style.display = 'none';
-    document.getElementById('main-content').style.display = 'block';
-    updateWelcomeMessage(name);
-    loadCartFromFirestore();
-    loadCatalog();
-    updateUserDropdown();
-}
-
-// Actualiza el mensaje de bienvenida
-function updateWelcomeMessage(name) {
-    const welcomeMessage = document.getElementById('welcome-message');
-    if (welcomeMessage) {
-        welcomeMessage.innerHTML = `Bienvenido, <span id="user-name">${name}</span>`;
-    }
-}
-
-// Muestra el modal para ingresar el nombre de usuario
-function showUsernameModal() {
-    document.getElementById('username-modal').style.display = 'flex';
-}
-
-// Establece el nombre de usuario cuando se presiona "Aceptar"
-function setUsername() {
-    const usernameInput = document.getElementById('username-input');
-    const name = usernameInput.value.trim();
-    if (name) {
-        // Aquí puedes agregar lógica para verificar la unicidad del nombre
-        userName = name;
-        localStorage.setItem('userName', userName);
-        hideSignInScreen(userName);
-        document.getElementById('username-modal').style.display = 'none';
-    } else {
-        alert("Por favor, ingresa un nombre de usuario.");
-    }
-}
-
-// Función para togglear el menú principal en dispositivos móviles
-function toggleDropdown(event) {
-    event.stopPropagation();
-    const menu = document.querySelector('.dropdown-menu');
-    if (menu) menu.classList.toggle('active');
-}
-
-// Función para togglear el menú de usuario
-function toggleUserDropdown(event) {
-    event.stopPropagation();
-    const userMenu = document.querySelector('.user-dropdown');
-    if (userMenu) userMenu.classList.toggle('active');
-}
-
-// Actualiza el menú del usuario según el estado de inicio de sesión
-function updateUserDropdown() {
-    const userMenu = document.querySelector('.user-dropdown');
-    if (!userMenu) return;
-    userMenu.innerHTML = '';
-
-    if (!userName) {
-        // Usuario no ha iniciado sesión
-        userMenu.innerHTML = `
-            <li><a href="#" onclick="signInWithGoogleOption()">Iniciar Sesión con Google</a></li>
-            <li><a href="#" onclick="continueWithoutAccountOption()">Continuar sin cuenta</a></li>
-        `;
-    } else {
-        // Usuario ha iniciado sesión
-        userMenu.innerHTML = `
-            <li><a href="#">Usuario: ${userName}</a></li>
-            <li><a href="#" onclick="signOut()">Cerrar Sesión</a></li>
-        `;
-    }
-}
-
-// Opciones del menú de usuario
-function signInWithGoogleOption() {
-    signInWithGoogle();
-}
-
-function continueWithoutAccountOption() {
-    showUsernameModal();
-}
-
-// Función para cerrar sesión
-function signOut() {
-    if (auth.currentUser) {
-        auth.signOut().then(() => {
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userName');
-            userEmail = '';
-            userName = '';
-            cart = [];
-            updateCart();
-            showSignInScreen();
-        }).catch((error) => {
-            console.error("Error al cerrar sesión:", error);
-        });
-    } else {
-        // Usuario sin cuenta
-        localStorage.removeItem('userName');
-        userName = '';
-        cart = [];
-        updateCart();
-        showSignInScreen();
-    }
-}
-
-// Funciones de Carrito y Catálogo
-
 async function loadCartFromFirestore() {
-    if (!userName && !userEmail) return;
-    const identifier = userEmail || userName;
     try {
-        const cartDoc = await firestore.collection('carts').doc(identifier).get();
+        const cartDoc = await firestore.collection('carts').doc(userEmail).get();
         if (cartDoc.exists) {
             cart = cartDoc.data().items;
             updateCart();
@@ -189,10 +52,8 @@ async function loadCartFromFirestore() {
 }
 
 async function saveCartToFirestore() {
-    if (!userName && !userEmail) return;
-    const identifier = userEmail || userName;
     try {
-        await firestore.collection('carts').doc(identifier).set({
+        await firestore.collection('carts').doc(userEmail).set({
             items: cart
         });
     } catch (error) {
@@ -372,9 +233,9 @@ function openProductModal(productId, name, price, imageUrl, description) {
     modalPrice.textContent = `Precio: S/ ${price}`;
     modalImage.src = decodedImageUrl;
 
+    modalDescriptionTitle.style.display = 'block';
+    modalDescription.innerHTML = '';
     if (decodedDescription) {
-        modalDescriptionTitle.style.display = 'block';
-        modalDescription.innerHTML = '';
         const descriptionItems = decodedDescription.split('.');
         descriptionItems.forEach(desc => {
             if (desc.trim().length > 0) {
@@ -385,16 +246,21 @@ function openProductModal(productId, name, price, imageUrl, description) {
         });
     } else {
         modalDescriptionTitle.style.display = 'none';
-        modalDescription.innerHTML = '';
     }
 
     const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
-    const modalShareBtn = document.getElementById('modalShareBtn');
-
     modalAddToCartBtn.onclick = function() {
-        addToCart(decodedId, name, price, imageUrl, modalAddToCartBtn);
+        addToCart(decodedId, name, price, imageUrl);
+        modalAddToCartBtn.textContent = 'Agregado';
+        modalAddToCartBtn.disabled = true;
+
+        setTimeout(() => {
+            modalAddToCartBtn.textContent = 'Agregar al Carrito';
+            modalAddToCartBtn.disabled = false;
+        }, 2000);
     };
 
+    const modalShareBtn = document.getElementById('modalShareBtn');
     modalShareBtn.onclick = function() {
         shareProduct(productId, name, price, imageUrl);
     };
@@ -413,7 +279,7 @@ function sendOrderViaWhatsApp() {
         return;
     }
 
-    let message = `Hola, soy ${userName || 'Cliente'}, me gustaría hacer el siguiente pedido:\n`;
+    let message = `Hola, soy ${userName}, me gustaría hacer el siguiente pedido:\n`;
     cart.forEach((item) => {
         message += `\n- ${item.name} (Cantidad: ${item.quantity})`;
     });
@@ -446,7 +312,6 @@ function shareProduct(productId, name, price, imageUrl) {
     window.open(whatsappUrl, '_blank');
 }
 
-// Cerrar modales al hacer clic fuera
 window.addEventListener('click', function(event) {
     const cartModal = document.getElementById('cartModal');
     const productModal = document.getElementById('productModal');
@@ -459,10 +324,7 @@ window.addEventListener('click', function(event) {
 });
 
 window.addEventListener('load', () => {
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', handleSearch);
-    }
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
 });
 
 // Exponer funciones globalmente
@@ -475,10 +337,3 @@ window.toggleProductModal = toggleProductModal;
 window.sendOrderViaWhatsApp = sendOrderViaWhatsApp;
 window.shareProduct = shareProduct;
 window.handleSearch = handleSearch;
-window.toggleUserDropdown = toggleUserDropdown;
-window.toggleDropdown = toggleDropdown;
-window.signInWithGoogleOption = signInWithGoogleOption;
-window.continueWithoutAccountOption = continueWithoutAccountOption;
-window.signOut = signOut;
-window.showUsernameModal = showUsernameModal;
-window.setUsername = setUsername;
