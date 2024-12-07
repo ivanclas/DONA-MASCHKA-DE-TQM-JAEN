@@ -49,7 +49,10 @@ window.onload = function() {
     }
 
     // Configurar el buscador
-    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+    }
 };
 
 // Función para iniciar sesión con Google
@@ -75,12 +78,24 @@ function signInWithGoogle() {
 
 // Función para mostrar el modal de ingreso de nombre de usuario
 function showUsernameModal() {
-    document.getElementById('username-modal').style.display = 'block';
+    const usernameModal = document.getElementById('usernameModal');
+    if (usernameModal) {
+        usernameModal.classList.add('show');
+    }
+}
+
+// Función para alternar el modal de nombre de usuario
+function toggleUsernameModal() {
+    const usernameModal = document.getElementById('usernameModal');
+    if (usernameModal) {
+        usernameModal.classList.toggle('show');
+    }
 }
 
 // Función para iniciar sesión con nombre de usuario
 function signInWithUsername() {
-    const username = document.getElementById('username-input').value.trim();
+    const usernameInput = document.getElementById('username-input');
+    const username = usernameInput.value.trim();
     if (username === "") {
         alert("Por favor, ingresa un nombre de usuario.");
         return;
@@ -92,7 +107,7 @@ function signInWithUsername() {
     userName = username;
     document.getElementById('user-name').textContent = userName;
     // Cerrar modal
-    document.getElementById('username-modal').style.display = 'none';
+    toggleUsernameModal();
     // Cargar carrito desde localStorage
     loadCartFromLocalStorage();
     // Cargar catálogo
@@ -415,11 +430,16 @@ function shareProduct(productId, name, price, imageUrl) {
 window.addEventListener('click', function(event) {
     const cartModal = document.getElementById('cartModal');
     const productModal = document.getElementById('productModal');
+    const usernameModal = document.getElementById('usernameModal');
+
     if (event.target === cartModal) {
         cartModal.classList.remove('show');
     }
     if (event.target === productModal) {
         productModal.classList.remove('show');
+    }
+    if (event.target === usernameModal) {
+        usernameModal.classList.remove('show');
     }
 });
 
@@ -438,11 +458,6 @@ window.onclick = function(event) {
         if (dropdownMenu.classList.contains('active')) {
             dropdownMenu.classList.remove('active');
         }
-    }
-    // Cerrar modal de nombre de usuario si se hace clic fuera
-    const usernameModal = document.getElementById('username-modal');
-    if (usernameModal && usernameModal.style.display === 'block' && !event.target.closest('.modal-content')) {
-        usernameModal.style.display = 'none';
     }
 };
 
@@ -472,6 +487,25 @@ function clearSession() {
     window.location.href = 'index.html';
 }
 
+// Función para alternar el menú desplegable en móviles
+function toggleDropdown(event) {
+    event.stopPropagation();
+    const menu = document.querySelector('.dropdown-menu');
+    menu.classList.toggle('active');
+}
+
+// Función para alternar el menú desplegable del usuario
+function toggleUserDropdown() {
+    const dropdown = document.getElementById('user-dropdown');
+    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+}
+
+// Función para cerrar el modal de nombre de usuario
+function toggleUsernameModal() {
+    const usernameModal = document.getElementById('usernameModal');
+    usernameModal.classList.toggle('show');
+}
+
 // Asignar funciones globalmente para que sean accesibles desde el HTML
 window.signInWithGoogle = signInWithGoogle;
 window.showUsernameModal = showUsernameModal;
@@ -485,3 +519,6 @@ window.toggleProductModal = toggleProductModal;
 window.sendOrderViaWhatsApp = sendOrderViaWhatsApp;
 window.shareProduct = shareProduct;
 window.signOut = signOut;
+window.toggleDropdown = toggleDropdown;
+window.toggleUserDropdown = toggleUserDropdown;
+window.toggleUsernameModal = toggleUsernameModal;
