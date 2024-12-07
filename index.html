@@ -83,6 +83,34 @@
         .navbar-menu li a:hover {
             background-color: #8b4513; /* Un tono más oscuro de marrón */
         }
+        /* Usuario Icono */
+        .user-icon {
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+        /* Dropdown Menu Usuario */
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background-color: #a0522d;
+            border: 1px solid #8b4513;
+            border-radius: 5px;
+            overflow: hidden;
+            z-index: 1001;
+        }
+        .user-dropdown a {
+            display: block;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        .user-dropdown a:hover {
+            background-color: #8b4513;
+        }
         /* Hamburger Menu */
         .hamburger-menu {
             display: none;
@@ -96,7 +124,7 @@
             background-color: white;
             margin: 4px 0;
         }
-        /* Dropdown Menu for Mobile */
+        /* Dropdown Menu para móviles */
         .dropdown-menu {
             display: none;
             flex-direction: column;
@@ -221,6 +249,29 @@
         .button-google i {
             font-size: 18px;
         }
+        /* Botón sin Google */
+        .button-username {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #555555;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .button-username:hover {
+            background-color: #333333;
+        }
+        .button-username i {
+            font-size: 18px;
+        }
         /* Footer */
         footer {
             text-align: center;
@@ -229,6 +280,46 @@
             font-size: 14px;
             color: #666;
             margin-top: auto;
+        }
+        /* Modal */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .modal-content input {
+            width: 80%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            background-color: #a0522d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-content button:hover {
+            background-color: #8b4513;
         }
         /* Responsive */
         @media (max-width: 768px) {
@@ -251,10 +342,23 @@
     <!-- Sign-in Screen -->
     <div id="sign-in-screen">
         <h1>Bienvenido a Doña Maschka</h1>
-        <p>Por favor, inicia sesión con Google para continuar.</p>
+        <p>Por favor, inicia sesión para continuar.</p>
         <button class="button-google" onclick="signInWithGoogle()">
             <i class="fab fa-google"></i> Iniciar Sesión con Google
         </button>
+        <button class="button-username" onclick="showUsernameModal()">
+            <i class="fas fa-user"></i> Iniciar Sesión sin Google
+        </button>
+    </div>
+
+    <!-- Modal para ingreso de nombre de usuario -->
+    <div id="username-modal" class="modal">
+        <div class="modal-content">
+            <h2>Ingresa tu Nombre de Usuario</h2>
+            <input type="text" id="username-input" placeholder="Nombre de Usuario">
+            <br>
+            <button onclick="signInWithUsername()">Iniciar Sesión</button>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -285,6 +389,13 @@
                 <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
                 <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
             </ul>
+            <!-- Icono de Usuario -->
+            <div class="user-icon" onclick="toggleUserDropdown()">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-dropdown" id="user-dropdown">
+                    <a href="#" onclick="signOut()">Cerrar Sesión</a>
+                </div>
+            </div>
         </nav>
 
         <!-- Header -->
@@ -317,7 +428,7 @@
                 <h2>Catálogo</h2>
                 <img src="catalogo.jpg" alt="Catálogo de Productos">
                 <p>Explora nuestros productos y encuentra aquello que necesitas. Haz clic en el botón de abajo para ver nuestro catálogo completo.</p>
-                <a href="catalago.html" class="button-google">
+                <a href="catalogo.html" class="button-google">
                     <i class="fas fa-box"></i> Ver Catálogo
                 </a>
             </section>
