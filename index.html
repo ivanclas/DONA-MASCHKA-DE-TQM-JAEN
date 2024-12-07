@@ -20,31 +20,9 @@
             color: #333;
             min-height: 100vh;
         }
-        /* Ocultar contenido principal hasta que el usuario inicie sesión */
+        /* Main Content visible by default */
         #main-content {
-            display: none;
             padding-top: 80px; /* Añadido para compensar el menú fijo */
-        }
-        /* Sign-in Screen */
-        #sign-in-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f5e8d8; /* Fondo de pantalla de inicio de sesión */
-            text-align: center;
-            padding: 20px;
-        }
-        #sign-in-screen h1 {
-            font-size: 36px;
-            color: #a0522d; /* Marrón oscuro */
-            margin-bottom: 20px;
-        }
-        #sign-in-screen p {
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 30px;
         }
         /* Navbar */
         .navbar {
@@ -340,28 +318,6 @@
 </head>
 <body>
 
-    <!-- Sign-in Screen -->
-    <div id="sign-in-screen">
-        <h1>Bienvenido a Doña Maschka</h1>
-        <p>Por favor, inicia sesión para continuar.</p>
-        <button class="button-google" onclick="signInWithGoogle()">
-            <i class="fab fa-google"></i> Iniciar Sesión con Google
-        </button>
-        <button class="button-username" onclick="showUsernameModal()">
-            <i class="fas fa-user"></i> Iniciar Sesión sin Google
-        </button>
-    </div>
-
-    <!-- Modal para ingreso de nombre de usuario -->
-    <div id="username-modal" class="modal">
-        <div class="modal-content">
-            <h2>Ingresa tu Nombre de Usuario</h2>
-            <input type="text" id="username-input" placeholder="Nombre de Usuario">
-            <br>
-            <button onclick="signInWithUsername()">Iniciar Sesión</button>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <div id="main-content">
         <!-- Navbar -->
@@ -394,6 +350,7 @@
             <div class="user-icon" onclick="toggleUserDropdown()">
                 <i class="fas fa-user-circle"></i>
                 <div class="user-dropdown" id="user-dropdown">
+                    <a href="#" onclick="showSignInModal()">Iniciar Sesión</a>
                     <a href="#" onclick="signOut()">Cerrar Sesión</a>
                 </div>
             </div>
@@ -409,25 +366,25 @@
         <div class="container">
             <section id="nosotros" class="section">
                 <h2>Sobre Nosotros</h2>
-                <img src="images/NOSOTROS.png" alt="Sobre Nosotros">
+                <img src="NOSOTROS.png" alt="Sobre Nosotros">
                 <p>En Doña Maschka, estamos comprometidos con ofrecer productos de calidad que mejoren la vida de nuestros clientes. Con años de experiencia en el mercado, nuestra misión es llevar lo mejor a cada hogar.</p>
             </section>
 
             <section id="mision" class="section">
                 <h2>Misión</h2>
-                <img src="images/mision.jpg" alt="Nuestra Misión">
+                <img src="mision.jpg" alt="Nuestra Misión">
                 <p>Nuestra misión es satisfacer las necesidades de nuestros clientes a través de productos innovadores, manteniendo siempre un compromiso con la calidad y el bienestar.</p>
             </section>
 
             <section id="vision" class="section">
                 <h2>Visión</h2>
-                <img src="images/vision.jpg" alt="Nuestra Visión">
+                <img src="vision.jpg" alt="Nuestra Visión">
                 <p>Ser reconocidos como una empresa líder en el sector, destacándonos por la calidad de nuestros productos y nuestro compromiso con el bienestar de la comunidad.</p>
             </section>
 
             <section id="catalogo" class="section">
                 <h2>Catálogo</h2>
-                <img src="images/catalogo.jpg" alt="Catálogo de Productos">
+                <img src="catalogo.jpg" alt="Catálogo de Productos">
                 <p>Explora nuestros productos y encuentra aquello que necesitas. Haz clic en el botón de abajo para ver nuestro catálogo completo.</p>
                 <a href="catalogo.html" class="button-google">
                     <i class="fas fa-box"></i> Ver Catálogo
@@ -436,7 +393,7 @@
 
             <section id="contacto" class="section">
                 <h2>Contacto</h2>
-                <img src="images/contacto.jpg" alt="Contacto">
+                <img src="contacto.jpg" alt="Contacto">
                 <p>¿Tienes preguntas o quieres saber más sobre nuestros productos? No dudes en contactarnos a través de nuestro número de teléfono.</p>
                 <p>Teléfono: 947 424 087</p>
             </section>
@@ -448,6 +405,29 @@
         </footer>
     </div>
 
+    <!-- Modal para ingreso de nombre de usuario -->
+    <div id="username-modal" class="modal">
+        <div class="modal-content">
+            <h2>Ingresa tu Nombre de Usuario</h2>
+            <input type="text" id="username-input" placeholder="Nombre de Usuario">
+            <br>
+            <button onclick="signInWithUsername()">Iniciar Sesión</button>
+        </div>
+    </div>
+
+    <!-- Modal para Sign In -->
+    <div id="sign-in-modal" class="modal">
+        <div class="modal-content">
+            <h2>Iniciar Sesión</h2>
+            <button class="button-google" onclick="signInWithGoogle()">
+                <i class="fab fa-google"></i> Iniciar Sesión con Google
+            </button>
+            <button class="button-username" onclick="showUsernameModal()">
+                <i class="fas fa-user"></i> Iniciar Sesión sin Google
+            </button>
+        </div>
+    </div>
+
     <!-- Firebase App (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
@@ -456,5 +436,54 @@
 
     <!-- Tu archivo JS separado -->
     <script src="procesar.js"></script>
+
+    <script>
+        // Función para mostrar el dropdown del usuario
+        function toggleUserDropdown() {
+            document.getElementById('user-dropdown').classList.toggle('show');
+        }
+
+        // Función para mostrar el modal de inicio de sesión
+        function showSignInModal() {
+            document.getElementById('sign-in-modal').style.display = 'block';
+        }
+
+        // Función para cerrar el modal al hacer clic fuera del contenido
+        window.onclick = function(event) {
+            const signInModal = document.getElementById('sign-in-modal');
+            const usernameModal = document.getElementById('username-modal');
+            if (event.target == signInModal) {
+                signInModal.style.display = "none";
+            }
+            if (event.target == usernameModal) {
+                usernameModal.style.display = "none";
+            }
+        }
+
+        // Función para mostrar el modal de nombre de usuario
+        function showUsernameModal() {
+            document.getElementById('sign-in-modal').style.display = 'none';
+            document.getElementById('username-modal').style.display = 'block';
+        }
+
+        // Aquí puedes agregar tus funciones de autenticación en procesar.js
+        // signInWithGoogle(), signInWithUsername(), signOut()
+
+        // Función para alternar el menú desplegable en móviles
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            document.querySelector('.dropdown-menu').classList.toggle('active');
+        }
+
+        // Cerrar dropdown de usuario al hacer clic en otro lugar
+        window.onclick = function(event) {
+            if (!event.target.matches('.user-icon') && !event.target.closest('.user-dropdown')) {
+                const dropdown = document.getElementById('user-dropdown');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        }
+    </script>
 </body>
 </html>
