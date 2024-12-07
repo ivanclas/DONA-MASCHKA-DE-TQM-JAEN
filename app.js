@@ -16,21 +16,28 @@ const firestore = firebase.firestore();
 
 let products = [];
 let cart = [];
-let userIdentifier = ''; // Puede ser email o nombre de usuario
-let isGoogleUser = false;
+let userEmail = '';
+let userName = '';
 
 // Verificar el estado de autenticación
 auth.onAuthStateChanged(user => {
-    if (user && isGoogleUser) {
-        const userNameElement = document.getElementById('user-name');
-        userNameElement.textContent = user.displayName;
-        userIdentifier = user.email;
+    if (user) {
+        // Usuario ha iniciado sesión con Google
+        userEmail = user.email;
+        userName = user.displayName;
+        localStorage.setItem('userEmail', userEmail);
+        localStorage.setItem('userName', userName);
+        updateWelcomeMessage(userName);
         loadCartFromFirestore();
         loadCatalog();
-    } else if (userIdentifier && !isGoogleUser) {
-        // Usuario sin cuenta ya iniciado
+        updateUserDropdown();
+    } else if (localStorage.getItem('userName')) {
+        // Usuario ha iniciado sesión sin cuenta (nombre de usuario)
+        userName = localStorage.getItem('userName');
+        updateWelcomeMessage(userName);
         loadCartFromFirestore();
         loadCatalog();
+        updateUserDropdown();
     } else {
         // Usuario no ha iniciado sesión
         showSignInScreen();
@@ -42,9 +49,7 @@ function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
         .then((result) => {
-            isGoogleUser = true;
-            userIdentifier = result.user.email;
-            hideSignInScreen(result.user.displayName);
+            // Ya manejado en onAuthStateChanged
         })
         .catch((error) => {
             console.error("Error al iniciar sesión con Google:", error);
@@ -63,8 +68,18 @@ function showSignInScreen() {
 function hideSignInScreen(name) {
     document.getElementById('sign-in-screen').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
-    document.getElementById('welcome-message').textContent = "Bienvenido, " + name;
+    updateWelcomeMessage(name);
+    loadCartFromFirestore();
+    loadCatalog();
     updateUserDropdown();
+}
+
+// Actualiza el mensaje de bienvenida
+function updateWelcomeMessage(name) {
+    const welcomeMessage = document.getElementById('welcome-message');
+    if (welcomeMessage) {
+        welcomeMessage.innerHTML = `Bienvenido, <span id="user-name">${name}</span>`;
+    }
 }
 
 // Muestra el modal para ingresar el nombre de usuario
@@ -77,13 +92,11 @@ function setUsername() {
     const usernameInput = document.getElementById('username-input');
     const name = usernameInput.value.trim();
     if (name) {
-        // Verificar si el nombre de usuario ya existe (opcional)
         // Aquí puedes agregar lógica para verificar la unicidad del nombre
-        
-        userIdentifier = name;
-        isGoogleUser = false;
+        userName = name;
+        localStorage.setItem('userName', userName);
+        hideSignInScreen(userName);
         document.getElementById('username-modal').style.display = 'none';
-        hideSignInScreen(name);
     } else {
         alert("Por favor, ingresa un nombre de usuario.");
     }
@@ -106,25 +119,19 @@ function toggleUserDropdown(event) {
 // Actualiza el menú del usuario según el estado de inicio de sesión
 function updateUserDropdown() {
     const userMenu = document.querySelector('.user-dropdown');
+    if (!userMenu) return;
     userMenu.innerHTML = '';
 
-    if (!isGoogleUser && !userIdentifier) {
+    if (!userName) {
         // Usuario no ha iniciado sesión
         userMenu.innerHTML = `
             <li><a href="#" onclick="signInWithGoogleOption()">Iniciar Sesión con Google</a></li>
             <li><a href="#" onclick="continueWithoutAccountOption()">Continuar sin cuenta</a></li>
         `;
-    } else if (isGoogleUser) {
-        // Usuario con Google
-        const userName = auth.currentUser ? auth.currentUser.displayName : "Usuario";
+    } else {
+        // Usuario ha iniciado sesión
         userMenu.innerHTML = `
-            <li><a href="#">Sesión Google: ${userName}</a></li>
-            <li><a href="#" onclick="signOut()">Cerrar Sesión</a></li>
-        `;
-    } else if (userIdentifier) {
-        // Usuario sin cuenta
-        userMenu.innerHTML = `
-            <li><a href="#">Usuario: ${userIdentifier}</a></li>
+            <li><a href="#">Usuario: ${userName}</a></li>
             <li><a href="#" onclick="signOut()">Cerrar Sesión</a></li>
         `;
     }
@@ -141,39 +148,35 @@ function continueWithoutAccountOption() {
 
 // Función para cerrar sesión
 function signOut() {
-    if (isGoogleUser) {
+    if (auth.currentUser) {
         auth.signOut().then(() => {
-            isGoogleUser = false;
-            userIdentifier = '';
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
+            userEmail = '';
+            userName = '';
+            cart = [];
+            updateCart();
             showSignInScreen();
+        }).catch((error) => {
+            console.error("Error al cerrar sesión:", error);
         });
     } else {
-        userIdentifier = '';
+        // Usuario sin cuenta
+        localStorage.removeItem('userName');
+        userName = '';
+        cart = [];
+        updateCart();
         showSignInScreen();
     }
 }
 
-// Cerrar menús al hacer clic fuera
-document.addEventListener('click', function(event) {
-    const menu = document.querySelector('.dropdown-menu');
-    const userMenu = document.querySelector('.user-dropdown');
-    const hamburger = document.querySelector('.hamburger-menu');
-    const userIcon = document.querySelector('.user-icon');
-
-    if (menu && menu.classList.contains('active') && !menu.contains(event.target) && !hamburger.contains(event.target)) {
-        menu.classList.remove('active');
-    }
-
-    if (userMenu && userMenu.classList.contains('active') && !userMenu.contains(event.target) && !userIcon.contains(event.target)) {
-        userMenu.classList.remove('active');
-    }
-});
-
 // Funciones de Carrito y Catálogo
 
 async function loadCartFromFirestore() {
+    if (!userName && !userEmail) return;
+    const identifier = userEmail || userName;
     try {
-        const cartDoc = await firestore.collection('carts').doc(userIdentifier).get();
+        const cartDoc = await firestore.collection('carts').doc(identifier).get();
         if (cartDoc.exists) {
             cart = cartDoc.data().items;
             updateCart();
@@ -186,8 +189,10 @@ async function loadCartFromFirestore() {
 }
 
 async function saveCartToFirestore() {
+    if (!userName && !userEmail) return;
+    const identifier = userEmail || userName;
     try {
-        await firestore.collection('carts').doc(userIdentifier).set({
+        await firestore.collection('carts').doc(identifier).set({
             items: cart
         });
     } catch (error) {
@@ -367,9 +372,9 @@ function openProductModal(productId, name, price, imageUrl, description) {
     modalPrice.textContent = `Precio: S/ ${price}`;
     modalImage.src = decodedImageUrl;
 
-    modalDescriptionTitle.style.display = 'block';
-    modalDescription.innerHTML = '';
     if (decodedDescription) {
+        modalDescriptionTitle.style.display = 'block';
+        modalDescription.innerHTML = '';
         const descriptionItems = decodedDescription.split('.');
         descriptionItems.forEach(desc => {
             if (desc.trim().length > 0) {
@@ -380,21 +385,16 @@ function openProductModal(productId, name, price, imageUrl, description) {
         });
     } else {
         modalDescriptionTitle.style.display = 'none';
+        modalDescription.innerHTML = '';
     }
 
     const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
-    modalAddToCartBtn.onclick = function() {
-        addToCart(decodedId, name, price, imageUrl);
-        modalAddToCartBtn.textContent = 'Agregado';
-        modalAddToCartBtn.disabled = true;
+    const modalShareBtn = document.getElementById('modalShareBtn');
 
-        setTimeout(() => {
-            modalAddToCartBtn.textContent = 'Agregar al Carrito';
-            modalAddToCartBtn.disabled = false;
-        }, 2000);
+    modalAddToCartBtn.onclick = function() {
+        addToCart(decodedId, name, price, imageUrl, modalAddToCartBtn);
     };
 
-    const modalShareBtn = document.getElementById('modalShareBtn');
     modalShareBtn.onclick = function() {
         shareProduct(productId, name, price, imageUrl);
     };
@@ -459,7 +459,10 @@ window.addEventListener('click', function(event) {
 });
 
 window.addEventListener('load', () => {
-    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+    }
 });
 
 // Exponer funciones globalmente
