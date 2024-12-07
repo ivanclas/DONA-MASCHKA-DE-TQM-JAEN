@@ -23,29 +23,158 @@
         box-sizing: border-box; /* Asegurar que padding y border se incluyan en el tamaño total */
     }
 
-    /* Estilos del encabezado */
-    .header {
-        position: sticky;
+    /* Navbar */
+    .navbar {
+        width: 100%;
+        background-color: #a0522d; /* Marrón oscuro para la barra de navegación */
+        padding: 15px 20px;
+        position: fixed; /* Menú fijo */
         top: 0;
-        background-color: #f7f3e9; /* Mismo color de fondo para integrarlo */
-        padding: 20px;
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
         align-items: center;
-        width: 100%; /* Asegurar que ocupe todo el ancho */
-        z-index: 100; /* Asegurar que esté por encima de otros elementos */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Añadido sombra al encabezado */
+        z-index: 1000;
+    }
+    .navbar .logo {
+        color: white;
+        font-size: 22px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+    }
+    .navbar .logo i {
+        margin-right: 8px;
+    }
+    .navbar-menu {
+        list-style: none;
+        display: flex;
+        gap: 10px;
+    }
+    .navbar-menu li a {
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .navbar-menu li a:hover {
+        background-color: #8b4513; /* Un tono más oscuro de marrón */
+    }
+    /* Usuario Icono */
+    .user-icon {
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        position: relative;
+    }
+    /* Dropdown Menu Usuario */
+    .user-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 50px;
+        background-color: #a0522d;
+        border: 1px solid #8b4513;
+        border-radius: 5px;
+        overflow: hidden;
+        z-index: 1001;
+        min-width: 150px;
+    }
+    .user-dropdown a {
+        display: block;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+    }
+    .user-dropdown a:hover {
+        background-color: #8b4513;
+    }
+    /* Hamburger Menu */
+    .hamburger-menu {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        padding: 10px;
+    }
+    .hamburger-menu span {
+        height: 3px;
+        width: 25px;
+        background-color: white;
+        margin: 4px 0;
+        transition: 0.4s;
+    }
+    /* Dropdown Menu para móviles */
+    .dropdown-menu {
+        display: none;
+        flex-direction: column;
+        background-color: #a0522d; /* Mismo marrón oscuro */
+        position: absolute;
+        top: 60px; /* Ajustado para el menú fijo */
+        left: 0;
+        width: 100%;
+        padding: 0;
+        z-index: 1000;
+    }
+    .dropdown-menu.active {
+        display: flex;
+    }
+    .dropdown-menu li {
+        width: 100%;
+    }
+    .dropdown-menu li a {
+        display: block;
+        color: white;
+        padding: 15px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        text-align: center;
+        border-top: 1px solid #8b4513;
+        border-bottom: 1px solid #8b4513;
+    }
+    .dropdown-menu li:first-child a {
+        border-top: none;
+    }
+    .dropdown-menu li:last-child a {
+        border-bottom: none;
+    }
+    .dropdown-menu li a:hover {
+        background-color: #8b4513;
     }
 
-    .header h1 {
-        font-size: 32px;
-        color: #a0522d; /* Marrón oscuro */
-        font-weight: 700;
-        letter-spacing: 1.5px;
+    /* Encabezado */
+    .header {
+        margin-top: 80px; /* Para compensar la barra de navegación fija */
         text-align: center;
-        margin: 0; /* Ajustar margen */
+        padding: 50px 20px;
+        background-image: url('ruta-de-tu-imagen-header.jpg'); /* Añade la ruta de tu imagen de encabezado */
+        background-size: cover;
+        background-position: center;
+        color: white;
+        position: relative;
+    }
+    .header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(165, 42, 42, 0.7); /* Overlay marrón oscuro */
+        z-index: 1;
+    }
+    .header h1, .header p {
+        position: relative;
+        z-index: 2;
+    }
+    .header h1 {
+        font-size: 36px;
         margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2); /* Sombrerito al título */
+    }
+    .header p {
+        font-size: 20px;
     }
 
     /* Estilos del mensaje de bienvenida */
@@ -222,7 +351,8 @@
 
     /* Modales */
     #cartModal,
-    #productModal {
+    #productModal,
+    #usernameModal {
         position: fixed;
         top: 0;
         left: 0;
@@ -236,12 +366,14 @@
     }
 
     #cartModal.show,
-    #productModal.show {
+    #productModal.show,
+    #usernameModal.show {
         display: flex;
     }
 
     #cartModalContent,
-    .product-modal-content {
+    .product-modal-content,
+    #usernameModalContent {
         background: white;
         padding: 20px;
         border-radius: 15px;
@@ -318,14 +450,16 @@
         color: #555;
     }
 
-    .product-modal-content .modal-buttons {
+    .product-modal-content .modal-buttons,
+    #usernameModalContent .modal-buttons {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 10px;
     }
 
-    .product-modal-content .modal-buttons button {
+    .product-modal-content .modal-buttons button,
+    #usernameModalContent .modal-buttons button {
         width: 80%;
         padding: 12px;
         font-size: 16px;
@@ -351,6 +485,39 @@
 
     .product-modal-content .modal-buttons .share-btn:hover {
         background-color: #1EBE5A;
+    }
+
+    /* Modal de Nombre de Usuario */
+    #usernameModalContent h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        text-align: center;
+        color: #a0522d;
+    }
+
+    #usernameModalContent input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-bottom: 15px;
+        transition: border-color 0.3s ease;
+    }
+
+    #usernameModalContent input:focus {
+        border-color: #a0522d;
+        outline: none;
+        box-shadow: 0 0 5px rgba(160, 82, 45, 0.5);
+    }
+
+    #usernameModalContent .modal-buttons button {
+        background-color: #a0522d;
+        color: white;
+    }
+
+    #usernameModalContent .modal-buttons button:hover {
+        background-color: #8b4513;
     }
 
     /* Estilos del carrito */
@@ -496,7 +663,8 @@
         }
 
         #cartModalContent,
-        .product-modal-content {
+        .product-modal-content,
+        #usernameModalContent {
             width: 90%;
             max-width: 400px;
             margin: 30px auto;
@@ -511,6 +679,16 @@
         .catalog-item {
             margin: 10px 0;
             padding: 10px;
+        }
+
+        /* Mostrar el hamburger menu en móviles */
+        .hamburger-menu {
+            display: flex;
+        }
+
+        /* Ocultar el menú de navegación en móviles */
+        .navbar-menu {
+            display: none;
         }
     }
     </style>
@@ -591,6 +769,18 @@
             <div class="modal-buttons">
                 <button class="add-to-cart-btn" id="modalAddToCartBtn">Agregar al Carrito</button>
                 <button class="share-btn" id="modalShareBtn">Compartir <i class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ingreso de Nombre de Usuario -->
+    <div id="usernameModal">
+        <div id="usernameModalContent">
+            <span class="close-btn" onclick="toggleUsernameModal()">&times;</span>
+            <h2>Ingresa tu Nombre de Usuario</h2>
+            <input type="text" id="username-input" placeholder="Nombre de Usuario">
+            <div class="modal-buttons">
+                <button class="add-to-cart-btn" onclick="signInWithUsername()">Ingresar</button>
             </div>
         </div>
     </div>
