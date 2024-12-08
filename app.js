@@ -33,8 +33,9 @@ window.onload = function() {
                 loadCartFromFirestore();
                 loadCatalog();
             } else {
-                // Usuario no ha iniciado sesión con Google
-                clearSession();
+                // Usuario no ha iniciado sesión con Google, pero no forzamos la salida
+                // Lo tratamos como invitado
+                setAsGuestUser();
             }
         });
     } else if (userType === 'username') {
@@ -44,8 +45,8 @@ window.onload = function() {
         loadCartFromLocalStorage();
         loadCatalog();
     } else {
-        // Usuario no ha iniciado sesión
-        window.location.href = 'index.html';
+        // Usuario no ha iniciado sesión (modo invitado)
+        setAsGuestUser();
     }
 
     // Configurar el buscador
@@ -54,6 +55,15 @@ window.onload = function() {
         searchInput.addEventListener('input', handleSearch);
     }
 };
+
+// Función para configurar el modo invitado
+function setAsGuestUser() {
+    userType = '';
+    userName = 'Invitado';
+    document.getElementById('user-name').textContent = userName;
+    loadCartFromLocalStorage(); // Como invitado manejamos el carrito localmente.
+    loadCatalog();
+}
 
 // Función para iniciar sesión con Google
 function signInWithGoogle() {
@@ -140,7 +150,7 @@ async function saveCartToFirestore() {
     }
 }
 
-// Función para cargar el carrito desde localStorage (Usuarios con Username)
+// Función para cargar el carrito desde localStorage (Usuarios con Username o Invitados)
 function loadCartFromLocalStorage() {
     const storedCart = localStorage.getItem('cart');
     if (storedCart) {
@@ -151,7 +161,7 @@ function loadCartFromLocalStorage() {
     updateCartUI();
 }
 
-// Función para guardar el carrito en localStorage (Usuarios con Username)
+// Función para guardar el carrito en localStorage (Usuarios con Username o Invitados)
 function saveCartToLocalStorage() {
     localStorage.setItem('cart', JSON.stringify(cart));
 }
@@ -315,7 +325,8 @@ function removeFromCart(index) {
 function saveCart() {
     if (userType === 'google') {
         saveCartToFirestore();
-    } else if (userType === 'username') {
+    } else {
+        // Para username o invitado, guardamos en localStorage
         saveCartToLocalStorage();
     }
 }
@@ -392,7 +403,8 @@ function sendOrderViaWhatsApp() {
         return;
     }
 
-    let message = `Hola, soy ${userName}, me gustaría hacer el siguiente pedido:\n`;
+    let displayedName = userName || 'Invitado';
+    let message = `Hola, soy ${displayedName}, me gustaría hacer el siguiente pedido:\n`;
     cart.forEach((item) => {
         message += `\n- ${item.name} (Cantidad: ${item.quantity})`;
     });
@@ -455,7 +467,7 @@ window.onclick = function(event) {
     // Cerrar dropdown de menú móvil
     if (!event.target.matches('.hamburger-menu') && !event.target.closest('.hamburger-menu')) {
         const dropdownMenu = document.querySelector('.dropdown-menu');
-        if (dropdownMenu.classList.contains('active')) {
+        if (dropdownMenu && dropdownMenu.classList.contains('active')) {
             dropdownMenu.classList.remove('active');
         }
     }
@@ -470,7 +482,7 @@ function signOut() {
             console.error("Error al cerrar sesión:", error);
             alert("Error al cerrar sesión. Por favor, inténtalo de nuevo.");
         });
-    } else if (userType === 'username') {
+    } else {
         clearSession();
     }
 }
@@ -483,8 +495,8 @@ function clearSession() {
     userType = '';
     userName = '';
     userEmail = '';
-    // Redirigir a la página de inicio
-    window.location.href = 'index.html';
+    // Modo invitado nuevamente
+    setAsGuestUser();
 }
 
 // Función para alternar el menú desplegable en móviles
@@ -498,12 +510,6 @@ function toggleDropdown(event) {
 function toggleUserDropdown() {
     const dropdown = document.getElementById('user-dropdown');
     dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-}
-
-// Función para cerrar el modal de nombre de usuario
-function toggleUsernameModal() {
-    const usernameModal = document.getElementById('usernameModal');
-    usernameModal.classList.toggle('show');
 }
 
 // Asignar funciones globalmente para que sean accesibles desde el HTML
