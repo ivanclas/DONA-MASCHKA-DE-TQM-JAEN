@@ -79,7 +79,7 @@ function signInWithUsername() {
 function showMainContent(userName) {
     const welcomeMessage = document.getElementById('welcome-message');
     if (welcomeMessage) {
-        welcomeMessage.innerText = `Bienvenido, ${userName}`;
+        welcomeMessage.innerText = `Bienvenido(a), ${userName}`;
     }
 
     const iniciarSesionBtn = document.getElementById('iniciar-sesion');
