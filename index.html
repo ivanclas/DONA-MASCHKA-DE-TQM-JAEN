@@ -90,9 +90,6 @@
         .user-dropdown a:hover {
             background-color: #8b4513;
         }
-        .user-dropdown a.hidden {
-            display: none;
-        }
         /* Hamburger Menu */
         .hamburger-menu {
             display: none;
@@ -329,7 +326,7 @@
             <div class="logo">
                 <i class="fas fa-hat-cowboy"></i> Doña Maschka
             </div>
-            <div class="hamburger-menu" onclick="toggleDropdown(event)">
+            <div class="hamburger-menu">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -351,11 +348,11 @@
                 <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
             </ul>
             <!-- Icono de Usuario -->
-            <div class="user-icon" onclick="toggleUserDropdown()">
+            <div class="user-icon">
                 <i class="fas fa-user-circle"></i>
                 <div class="user-dropdown" id="user-dropdown">
-                    <a href="#" id="iniciar-sesion" onclick="showSignInModal()">Iniciar Sesión</a>
-                    <a href="#" id="cerrar-sesion" onclick="signOut()">Cerrar Sesión</a>
+                    <a href="#" id="iniciar-sesion">Iniciar Sesión</a>
+                    <a href="#" id="cerrar-sesion" style="display: none;">Cerrar Sesión</a>
                 </div>
             </div>
         </nav>
@@ -415,7 +412,7 @@
             <h2>Ingresa tu Nombre de Usuario</h2>
             <input type="text" id="username-input" placeholder="Nombre de Usuario">
             <br>
-            <button onclick="signInWithUsername()">Iniciar Sesión</button>
+            <button id="username-login-button">Iniciar Sesión</button>
         </div>
     </div>
 
@@ -423,10 +420,10 @@
     <div id="sign-in-modal" class="modal">
         <div class="modal-content">
             <h2>Iniciar Sesión</h2>
-            <button class="button-google" onclick="signInWithGoogle()">
+            <button class="button-google" id="google-login-button">
                 <i class="fab fa-google"></i> Iniciar Sesión con Google
             </button>
-            <button class="button-username" onclick="showUsernameModal()">
+            <button class="button-username" id="username-login-option">
                 <i class="fas fa-user"></i> Iniciar Sesión sin Google
             </button>
         </div>
@@ -447,7 +444,7 @@
         measurementId: "G-89B7M13GTS"
     };
 
-    // Inicializar Firebase
+    // Inicializar Firebase (asegurarse de que no se inicialice más de una vez)
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -459,6 +456,7 @@
         auth.signInWithPopup(provider)
             .then((result) => {
                 const userName = result.user.displayName;
+                // Guardar información del usuario en localStorage
                 localStorage.setItem('userType', 'google');
                 localStorage.setItem('userName', userName);
                 showMainContent(userName);
@@ -487,8 +485,10 @@
             alert("Por favor, ingresa un nombre de usuario válido.");
             return;
         }
+        // Guardar en localStorage
         localStorage.setItem('userType', 'username');
         localStorage.setItem('userName', username);
+        // Cerrar modal y mostrar contenido principal
         const usernameModal = document.getElementById('username-modal');
         if (usernameModal) usernameModal.style.display = 'none';
         showMainContent(username);
@@ -645,6 +645,45 @@
     window.toggleUserDropdown = toggleUserDropdown;
     window.signOut = signOut;
     window.showSignInModal = showSignInModal;
+
+    // Asignar eventos después de que el DOM haya cargado completamente
+    document.addEventListener('DOMContentLoaded', () => {
+        const hamburgerMenu = document.querySelector('.hamburger-menu');
+        const userIcon = document.querySelector('.user-icon');
+        const iniciarSesionBtn = document.getElementById('iniciar-sesion');
+        const cerrarSesionBtn = document.getElementById('cerrar-sesion');
+        const googleLoginBtn = document.getElementById('google-login-button');
+        const usernameLoginOption = document.getElementById('username-login-option');
+        const usernameLoginButton = document.getElementById('username-login-button');
+
+        if (hamburgerMenu) {
+            hamburgerMenu.addEventListener('click', toggleDropdown);
+        }
+
+        if (userIcon) {
+            userIcon.addEventListener('click', toggleUserDropdown);
+        }
+
+        if (iniciarSesionBtn) {
+            iniciarSesionBtn.addEventListener('click', showSignInModal);
+        }
+
+        if (cerrarSesionBtn) {
+            cerrarSesionBtn.addEventListener('click', signOut);
+        }
+
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', signInWithGoogle);
+        }
+
+        if (usernameLoginOption) {
+            usernameLoginOption.addEventListener('click', showUsernameModal);
+        }
+
+        if (usernameLoginButton) {
+            usernameLoginButton.addEventListener('click', signInWithUsername);
+        }
+    });
     </script>
 </body>
 </html>
