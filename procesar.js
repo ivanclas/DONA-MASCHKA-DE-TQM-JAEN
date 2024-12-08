@@ -9,7 +9,7 @@ const firebaseConfig = {
     measurementId: "G-89B7M13GTS"
 };
 
-// Inicializar Firebase
+// Inicializar Firebase (asegurarse de que no se inicialice más de una vez)
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -21,9 +21,11 @@ function signInWithGoogle() {
     auth.signInWithPopup(provider)
         .then((result) => {
             const userName = result.user.displayName;
+            // Guardar información del usuario en localStorage
             localStorage.setItem('userType', 'google');
             localStorage.setItem('userName', userName);
             showMainContent(userName);
+            closeAllModals();
         })
         .catch((error) => {
             console.error("Error al iniciar sesión con Google:", error);
@@ -33,6 +35,7 @@ function signInWithGoogle() {
 
 // Función para mostrar el modal de ingreso de nombre de usuario
 function showUsernameModal() {
+    document.getElementById('sign-in-modal').style.display = 'none';
     document.getElementById('username-modal').style.display = 'block';
 }
 
@@ -43,17 +46,21 @@ function signInWithUsername() {
         alert("Por favor, ingresa un nombre de usuario válido.");
         return;
     }
+    // Guardar en localStorage
     localStorage.setItem('userType', 'username');
     localStorage.setItem('userName', username);
+    // Cerrar modal y mostrar contenido principal
     document.getElementById('username-modal').style.display = 'none';
     showMainContent(username);
 }
 
 // Función para mostrar el contenido principal
 function showMainContent(userName) {
-    document.getElementById('sign-in-screen').style.display = 'none';
-    document.getElementById('main-content').style.display = 'block';
+    // Actualizar mensaje de bienvenida
     document.getElementById('welcome-message').innerText = `Bienvenido, ${userName}`;
+    // Actualizar menú de usuario
+    document.getElementById('iniciar-sesion').style.display = 'none';
+    document.getElementById('cerrar-sesion').style.display = 'block';
 }
 
 // Función para cerrar sesión
@@ -77,15 +84,19 @@ function signOutUser() {
 function clearSession() {
     localStorage.removeItem('userType');
     localStorage.removeItem('userName');
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('sign-in-screen').style.display = 'flex';
+    // Restaurar mensaje de bienvenida
     document.getElementById('welcome-message').innerText = 'Bienvenido';
+    // Actualizar menú de usuario
+    document.getElementById('iniciar-sesion').style.display = 'block';
+    document.getElementById('cerrar-sesion').style.display = 'none';
+    // Cerrar dropdown si está abierto
+    document.getElementById('user-dropdown').classList.remove('show');
 }
 
 // Función para alternar el menú desplegable del usuario
 function toggleUserDropdown() {
     const dropdown = document.getElementById('user-dropdown');
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    dropdown.classList.toggle('show');
 }
 
 // Función para alternar el menú desplegable en móviles
@@ -95,34 +106,50 @@ function toggleDropdown(event) {
     menu.classList.toggle('active');
 }
 
-// Cerrar los dropdowns si se hace clic fuera
-window.onclick = function (event) {
+// Función para mostrar el modal de inicio de sesión
+function showSignInModal() {
+    document.getElementById('sign-in-modal').style.display = 'block';
+    document.getElementById('username-modal').style.display = 'none';
+}
+
+// Función para cerrar todos los modales
+function closeAllModals() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.style.display = 'none';
+    });
+}
+
+// Cerrar dropdown y modales si se hace clic fuera
+window.onclick = function(event) {
     const dropdown = document.getElementById('user-dropdown');
     const dropdownMenu = document.querySelector('.dropdown-menu');
-    const modal = document.getElementById('username-modal');
+    const signInModal = document.getElementById('sign-in-modal');
+    const usernameModal = document.getElementById('username-modal');
 
-    if (!event.target.closest('.user-icon') && dropdown) {
-        dropdown.style.display = 'none';
+    // Cerrar dropdown de usuario
+    if (!event.target.closest('.user-icon')) {
+        dropdown.classList.remove('show');
     }
 
-    if (!event.target.closest('.hamburger-menu') && dropdownMenu?.classList.contains('active')) {
+    // Cerrar dropdown de menú móvil
+    if (!event.target.closest('.hamburger-menu') && dropdownMenu.classList.contains('active')) {
         dropdownMenu.classList.remove('active');
     }
 
-    if (modal && modal.style.display === 'block' && !event.target.closest('.modal-content')) {
-        modal.style.display = 'none';
+    // Cerrar modales si se hace clic fuera del contenido
+    if (signInModal && event.target == signInModal) {
+        signInModal.style.display = "none";
+    }
+    if (usernameModal && event.target == usernameModal) {
+        usernameModal.style.display = "none";
     }
 };
 
-// Cerrar el modal al presionar la tecla Esc
+// Cerrar modales al presionar la tecla Esc
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-        const modals = document.querySelectorAll('.modal');
-        modals.forEach(modal => {
-            if (modal.style.display === 'block') {
-                modal.style.display = 'none';
-            }
-        });
+        closeAllModals();
     }
 });
 
@@ -139,8 +166,7 @@ auth.onAuthStateChanged(user => {
         if (userType && userName) {
             showMainContent(userName);
         } else {
-            document.getElementById('sign-in-screen').style.display = 'flex';
-            document.getElementById('main-content').style.display = 'none';
+            clearSession();
         }
     }
 });
@@ -151,6 +177,8 @@ window.onload = function () {
     const userName = localStorage.getItem('userName');
     if (userType && userName) {
         showMainContent(userName);
+    } else {
+        clearSession();
     }
 };
 
@@ -166,3 +194,4 @@ window.signInWithUsername = signInWithUsername;
 window.toggleDropdown = toggleDropdown;
 window.toggleUserDropdown = toggleUserDropdown;
 window.signOut = signOut;
+window.showSignInModal = showSignInModal;
