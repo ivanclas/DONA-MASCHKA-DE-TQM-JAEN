@@ -85,9 +85,13 @@
             color: white;
             padding: 10px 20px;
             text-decoration: none;
+            cursor: pointer;
         }
         .user-dropdown a:hover {
             background-color: #8b4513;
+        }
+        .user-dropdown a.hidden {
+            display: none;
         }
         /* Hamburger Menu */
         .hamburger-menu {
@@ -350,8 +354,8 @@
             <div class="user-icon" onclick="toggleUserDropdown()">
                 <i class="fas fa-user-circle"></i>
                 <div class="user-dropdown" id="user-dropdown">
-                    <a href="#" onclick="showSignInModal()">Iniciar Sesión</a>
-                    <a href="#" onclick="signOut()">Cerrar Sesión</a>
+                    <a href="#" id="iniciar-sesion" onclick="showSignInModal()">Iniciar Sesión</a>
+                    <a href="#" id="cerrar-sesion" onclick="signOut()">Cerrar Sesión</a>
                 </div>
             </div>
         </nav>
@@ -386,7 +390,7 @@
                 <h2>Catálogo</h2>
                 <img src="catalogo.jpg" alt="Catálogo de Productos">
                 <p>Explora nuestros productos y encuentra aquello que necesitas. Haz clic en el botón de abajo para ver nuestro catálogo completo.</p>
-                <a href="catalogo.html" class="button-google">
+                <a href="catalago.html" class="button-google">
                     <i class="fas fa-box"></i> Ver Catálogo
                 </a>
             </section>
@@ -431,59 +435,7 @@
     <!-- Firebase App (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <!-- Iconos de Font Awesome (eliminado el script problemático) -->
-    <!-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
-
     <!-- Tu archivo JS separado -->
     <script src="procesar.js"></script>
-
-    <script>
-        // Función para mostrar el dropdown del usuario
-        function toggleUserDropdown() {
-            document.getElementById('user-dropdown').classList.toggle('show');
-        }
-
-        // Función para mostrar el modal de inicio de sesión
-        function showSignInModal() {
-            document.getElementById('sign-in-modal').style.display = 'block';
-        }
-
-        // Función para cerrar el modal al hacer clic fuera del contenido
-        window.onclick = function(event) {
-            const signInModal = document.getElementById('sign-in-modal');
-            const usernameModal = document.getElementById('username-modal');
-            if (event.target == signInModal) {
-                signInModal.style.display = "none";
-            }
-            if (event.target == usernameModal) {
-                usernameModal.style.display = "none";
-            }
-        }
-
-        // Función para mostrar el modal de nombre de usuario
-        function showUsernameModal() {
-            document.getElementById('sign-in-modal').style.display = 'none';
-            document.getElementById('username-modal').style.display = 'block';
-        }
-
-        // Aquí puedes agregar tus funciones de autenticación en procesar.js
-        // signInWithGoogle(), signInWithUsername(), signOut()
-
-        // Función para alternar el menú desplegable en móviles
-        function toggleDropdown(event) {
-            event.stopPropagation();
-            document.querySelector('.dropdown-menu').classList.toggle('active');
-        }
-
-        // Cerrar dropdown de usuario al hacer clic en otro lugar
-        window.onclick = function(event) {
-            if (!event.target.matches('.user-icon') && !event.target.closest('.user-dropdown')) {
-                const dropdown = document.getElementById('user-dropdown');
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
-            }
-        }
-    </script>
 </body>
 </html>
