@@ -125,6 +125,12 @@
         .user-dropdown a:hover {
             background-color: #8b4513;
         }
+
+        /* Clase añadida para mostrar el dropdown del usuario */
+        .user-dropdown.show {
+            display: block;
+        }
+
         header {
             text-align: center;
             padding: 50px 20px;
@@ -404,15 +410,14 @@
     <script>
     // Configuración de Firebase
     const firebaseConfig = {
-        apiKey: "TU_API_KEY",
-        authDomain: "TU_AUTH_DOMAIN",
-        projectId: "TU_PROJECT_ID",
-        storageBucket: "TU_STORAGE_BUCKET",
-        messagingSenderId: "TU_MESSAGING_SENDER_ID",
-        appId: "TU_APP_ID",
-        measurementId: "TU_MEASUREMENT_ID"
-    };
-
+    apiKey: "AIzaSyBP3bJR_DA6EuV66Sze0vHLfo8QKNJ5_IQ",
+    authDomain: "machka-8432e.firebaseapp.com",
+    projectId: "machka-8432e",
+    storageBucket: "machka-8432e.appspot.com",
+    messagingSenderId: "421528005263",
+    appId: "1:421528005263:web:df708ddf04377600c55efa",
+    measurementId: "G-89B7M13GTS"
+};
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
