@@ -108,7 +108,7 @@ function clearSession() {
     localStorage.removeItem('userType');
     localStorage.removeItem('userName');
     const welcomeMessage = document.getElementById('welcome-message');
-    if (welcomeMessage) welcomeMessage.innerText = 'Bienvenido';
+    if (welcomeMessage) welcomeMessage.innerText = 'Bienvenido(a)';
     const iniciarSesionBtn = document.getElementById('iniciar-sesion');
     const cerrarSesionBtn = document.getElementById('cerrar-sesion');
     if (iniciarSesionBtn) iniciarSesionBtn.style.display = 'block';
