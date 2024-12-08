@@ -16,7 +16,7 @@
         }
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f3e9; /* Fondo de página en marrón claro */
+            background-color: #f7f3e9;
             color: #333;
             min-height: 100vh;
         }
@@ -27,9 +27,9 @@
         /* Navbar */
         .navbar {
             width: 100%;
-            background-color: #a0522d; /* Marrón oscuro para la barra de navegación */
+            background-color: #a0522d;
             padding: 15px 20px;
-            position: fixed; /* Menú fijo */
+            position: fixed;
             top: 0;
             display: flex;
             justify-content: space-between;
@@ -59,7 +59,7 @@
             border-radius: 5px;
         }
         .navbar-menu li a:hover {
-            background-color: #8b4513; /* Un tono más oscuro de marrón */
+            background-color: #8b4513;
         }
         /* Usuario Icono */
         .user-icon {
@@ -110,9 +110,9 @@
         .dropdown-menu {
             display: none;
             flex-direction: column;
-            background-color: #a0522d; /* Mismo marrón oscuro */
+            background-color: #a0522d;
             position: absolute;
-            top: 60px; /* Ajustado para el menú fijo */
+            top: 60px;
             left: 0;
             width: 100%;
             padding: 0;
@@ -147,7 +147,7 @@
         header {
             text-align: center;
             padding: 50px 20px;
-            background-image: url('https://via.placeholder.com/1920x300'); /* Imagen de prueba */
+            background-image: url('https://via.placeholder.com/1920x300');
             background-size: cover;
             background-position: center;
             color: white;
@@ -160,7 +160,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(165, 42, 42, 0.7); /* Overlay marrón oscuro */
+            background-color: rgba(165, 42, 42, 0.7);
             z-index: 1;
         }
         header h1, header p {
@@ -181,13 +181,13 @@
             padding: 20px;
         }
         .section {
-            background-color: #fffaf0; /* Fondo crema claro */
+            background-color: #fffaf0;
             padding: 20px;
             margin: 20px 0;
             border-radius: 12px;
         }
         .section h2 {
-            color: #a0522d; /* Marrón oscuro */
+            color: #a0522d;
             font-size: 22px;
             margin-bottom: 15px;
             text-align: center;
@@ -200,7 +200,7 @@
         }
         .section img {
             width: 100%;
-            max-width: 300px; /* Establece un ancho máximo para las imágenes */
+            max-width: 300px;
             height: auto;
             border-radius: 12px;
             margin-bottom: 20px;
@@ -258,29 +258,29 @@
         footer {
             text-align: center;
             padding: 20px;
-            background-color: #f5e8d8; /* Fondo del footer */
+            background-color: #f5e8d8;
             font-size: 14px;
             color: #666;
             margin-top: auto;
         }
         /* Modal */
         .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 2000; 
+            display: none;
+            position: fixed;
+            z-index: 2000;
             left: 0;
             top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.5); 
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto; 
+            margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%; 
+            width: 80%;
             max-width: 400px;
             border-radius: 10px;
             text-align: center;
@@ -390,7 +390,7 @@
                 <h2>Catálogo</h2>
                 <img src="catalogo.jpg" alt="Catálogo de Productos">
                 <p>Explora nuestros productos y encuentra aquello que necesitas. Haz clic en el botón de abajo para ver nuestro catálogo completo.</p>
-                <a href="catalago.html" class="button-google">
+                <a href="catalogo.html" class="button-google">
                     <i class="fas fa-box"></i> Ver Catálogo
                 </a>
             </section>
@@ -447,7 +447,7 @@
         measurementId: "G-89B7M13GTS"
     };
 
-    // Inicializar Firebase (asegurarse de que no se inicialice más de una vez)
+    // Inicializar Firebase
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -459,7 +459,6 @@
         auth.signInWithPopup(provider)
             .then((result) => {
                 const userName = result.user.displayName;
-                // Guardar información del usuario en localStorage
                 localStorage.setItem('userType', 'google');
                 localStorage.setItem('userName', userName);
                 showMainContent(userName);
@@ -488,10 +487,8 @@
             alert("Por favor, ingresa un nombre de usuario válido.");
             return;
         }
-        // Guardar en localStorage
         localStorage.setItem('userType', 'username');
         localStorage.setItem('userName', username);
-        // Cerrar modal y mostrar contenido principal
         const usernameModal = document.getElementById('username-modal');
         if (usernameModal) usernameModal.style.display = 'none';
         showMainContent(username);
