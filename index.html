@@ -410,14 +410,14 @@
     <script>
     // Configuración de Firebase
     const firebaseConfig = {
-    apiKey: "AIzaSyBP3bJR_DA6EuV66Sze0vHLfo8QKNJ5_IQ",
-    authDomain: "machka-8432e.firebaseapp.com",
-    projectId: "machka-8432e",
-    storageBucket: "machka-8432e.appspot.com",
-    messagingSenderId: "421528005263",
-    appId: "1:421528005263:web:df708ddf04377600c55efa",
-    measurementId: "G-89B7M13GTS"
-};
+        apiKey: "AIzaSyBP3bJR_DA6EuV66Sze0vHLfo8QKNJ5_IQ",
+        authDomain: "machka-8432e.firebaseapp.com",
+        projectId: "machka-8432e",
+        storageBucket: "machka-8432e.appspot.com",
+        messagingSenderId: "421528005263",
+        appId: "1:421528005263:web:df708ddf04377600c55efa",
+        measurementId: "G-89B7M13GTS"
+    };
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -559,6 +559,25 @@
             clearSession();
         }
     };
+
+    // Cerrar el menú desplegable al hacer clic en un enlace del menú
+    document.querySelectorAll('.dropdown-menu li a').forEach(link => {
+        link.addEventListener('click', () => {
+            const menu = document.querySelector('.dropdown-menu');
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        });
+    });
+
+    // Cerrar el menú desplegable al hacer clic fuera de él
+    window.addEventListener('click', function(event) {
+        const menu = document.querySelector('.dropdown-menu');
+        const hamburger = document.querySelector('.hamburger-menu');
+        if (menu.classList.contains('active') && !hamburger.contains(event.target) && !menu.contains(event.target)) {
+            menu.classList.remove('active');
+        }
+    });
     </script>
 </body>
 </html>
