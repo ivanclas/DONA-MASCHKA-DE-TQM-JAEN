@@ -20,11 +20,9 @@
             color: #333;
             min-height: 100vh;
         }
-        /* Main Content visible by default */
         #main-content {
-            padding-top: 80px; /* Añadido para compensar el menú fijo */
+            padding-top: 80px;
         }
-        /* Navbar */
         .navbar {
             width: 100%;
             background-color: #a0522d;
@@ -61,14 +59,51 @@
         .navbar-menu li a:hover {
             background-color: #8b4513;
         }
-        /* Usuario Icono */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .hamburger-menu span {
+            height: 3px;
+            width: 25px;
+            background-color: white;
+            margin: 4px 0;
+        }
+        .dropdown-menu {
+            display: none;
+            flex-direction: column;
+            background-color: #a0522d;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            padding: 0;
+            z-index: 1000;
+        }
+        .dropdown-menu.active {
+            display: flex;
+        }
+        .dropdown-menu li a {
+            display: block;
+            color: white;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            text-align: center;
+            border-top: 1px solid #8b4513;
+            border-bottom: 1px solid #8b4513;
+        }
+        .dropdown-menu li a:hover {
+            background-color: #8b4513;
+        }
         .user-icon {
             color: white;
             font-size: 20px;
             cursor: pointer;
             position: relative;
         }
-        /* Dropdown Menu Usuario */
         .user-dropdown {
             display: none;
             position: absolute;
@@ -90,57 +125,6 @@
         .user-dropdown a:hover {
             background-color: #8b4513;
         }
-        /* Hamburger Menu */
-        .hamburger-menu {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            padding: 10px;
-        }
-        .hamburger-menu span {
-            height: 3px;
-            width: 25px;
-            background-color: white;
-            margin: 4px 0;
-        }
-        /* Dropdown Menu para móviles */
-        .dropdown-menu {
-            display: none;
-            flex-direction: column;
-            background-color: #a0522d;
-            position: absolute;
-            top: 60px;
-            left: 0;
-            width: 100%;
-            padding: 0;
-            z-index: 1000;
-        }
-        .dropdown-menu.active {
-            display: flex;
-        }
-        .dropdown-menu li {
-            width: 100%;
-        }
-        .dropdown-menu li a {
-            display: block;
-            color: white;
-            padding: 15px 20px;
-            text-decoration: none;
-            font-size: 16px;
-            text-align: center;
-            border-top: 1px solid #8b4513;
-            border-bottom: 1px solid #8b4513;
-        }
-        .dropdown-menu li:first-child a {
-            border-top: none;
-        }
-        .dropdown-menu li:last-child a {
-            border-bottom: none;
-        }
-        .dropdown-menu li a:hover {
-            background-color: #8b4513;
-        }
-        /* Header */
         header {
             text-align: center;
             padding: 50px 20px;
@@ -171,7 +155,6 @@
         header p {
             font-size: 20px;
         }
-        /* Secciones */
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -205,7 +188,6 @@
             margin-left: auto;
             margin-right: auto;
         }
-        /* Botón Google */
         .button-google {
             display: inline-flex;
             align-items: center;
@@ -228,7 +210,6 @@
         .button-google i {
             font-size: 18px;
         }
-        /* Botón sin Google */
         .button-username {
             display: inline-flex;
             align-items: center;
@@ -251,7 +232,6 @@
         .button-username i {
             font-size: 18px;
         }
-        /* Footer */
         footer {
             text-align: center;
             padding: 20px;
@@ -260,7 +240,6 @@
             color: #666;
             margin-top: auto;
         }
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -300,7 +279,6 @@
         .modal-content button:hover {
             background-color: #8b4513;
         }
-        /* Responsive */
         @media (max-width: 768px) {
             .navbar-menu {
                 display: none;
@@ -319,19 +297,16 @@
 </head>
 <body>
 
-    <!-- Main Content -->
     <div id="main-content">
-        <!-- Navbar -->
         <nav class="navbar">
             <div class="logo">
                 <i class="fas fa-hat-cowboy"></i> Doña Maschka
             </div>
-            <div class="hamburger-menu">
+            <div class="hamburger-menu" onclick="toggleDropdown(event)">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
-            <!-- Menú normal para computadoras -->
             <ul class="navbar-menu">
                 <li><a href="#nosotros"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
                 <li><a href="#mision"><i class="fas fa-bullseye"></i> Misión</a></li>
@@ -339,7 +314,6 @@
                 <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
                 <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
             </ul>
-            <!-- Menú desplegable para móviles -->
             <ul class="dropdown-menu">
                 <li><a href="#nosotros"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
                 <li><a href="#mision"><i class="fas fa-bullseye"></i> Misión</a></li>
@@ -347,46 +321,43 @@
                 <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
                 <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
             </ul>
-            <!-- Icono de Usuario -->
-            <div class="user-icon">
+            <div class="user-icon" onclick="toggleUserDropdown()">
                 <i class="fas fa-user-circle"></i>
                 <div class="user-dropdown" id="user-dropdown">
-                    <a href="#" id="iniciar-sesion">Iniciar Sesión</a>
-                    <a href="#" id="cerrar-sesion" style="display: none;">Cerrar Sesión</a>
+                    <a href="#" id="iniciar-sesion" onclick="showSignInModal()">Iniciar Sesión</a>
+                    <a href="#" id="cerrar-sesion" onclick="signOut()" style="display: none;">Cerrar Sesión</a>
                 </div>
             </div>
         </nav>
 
-        <!-- Header -->
         <header>
             <h1 id="welcome-message">Bienvenido</h1>
             <p>Productos de calidad para el bienestar de todos</p>
         </header>
 
-        <!-- Contenido -->
         <div class="container">
             <section id="nosotros" class="section">
                 <h2>Sobre Nosotros</h2>
                 <img src="NOSOTROS.png" alt="Sobre Nosotros">
-                <p>En Doña Maschka, estamos comprometidos con ofrecer productos de calidad que mejoren la vida de nuestros clientes. Con años de experiencia en el mercado, nuestra misión es llevar lo mejor a cada hogar.</p>
+                <p>En Doña Maschka, estamos comprometidos con ofrecer productos de calidad que mejoren la vida de nuestros clientes.</p>
             </section>
 
             <section id="mision" class="section">
                 <h2>Misión</h2>
                 <img src="mision.jpg" alt="Nuestra Misión">
-                <p>Nuestra misión es satisfacer las necesidades de nuestros clientes a través de productos innovadores, manteniendo siempre un compromiso con la calidad y el bienestar.</p>
+                <p>Nuestra misión es satisfacer las necesidades de nuestros clientes a través de productos innovadores.</p>
             </section>
 
             <section id="vision" class="section">
                 <h2>Visión</h2>
                 <img src="vision.jpg" alt="Nuestra Visión">
-                <p>Ser reconocidos como una empresa líder en el sector, destacándonos por la calidad de nuestros productos y nuestro compromiso con el bienestar de la comunidad.</p>
+                <p>Ser reconocidos como una empresa líder en el sector.</p>
             </section>
 
             <section id="catalogo" class="section">
                 <h2>Catálogo</h2>
                 <img src="catalogo.jpg" alt="Catálogo de Productos">
-                <p>Explora nuestros productos y encuentra aquello que necesitas. Haz clic en el botón de abajo para ver nuestro catálogo completo.</p>
+                <p>Haz clic para ver nuestro catálogo completo.</p>
                 <a href="catalogo.html" class="button-google">
                     <i class="fas fa-box"></i> Ver Catálogo
                 </a>
@@ -395,35 +366,33 @@
             <section id="contacto" class="section">
                 <h2>Contacto</h2>
                 <img src="contacto.jpg" alt="Contacto">
-                <p>¿Tienes preguntas o quieres saber más sobre nuestros productos? No dudes en contactarnos a través de nuestro número de teléfono.</p>
-                <p>Teléfono: 947 424 087</p>
+                <p>¿Tienes preguntas? Contáctanos al 947 424 087</p>
             </section>
         </div>
 
-        <!-- Footer -->
         <footer>
             &copy; 2024 Doña Maschka. Todos los derechos reservados.
         </footer>
     </div>
 
-    <!-- Modal para ingreso de nombre de usuario -->
+    <!-- Modal para nombre de usuario -->
     <div id="username-modal" class="modal">
         <div class="modal-content">
             <h2>Ingresa tu Nombre de Usuario</h2>
             <input type="text" id="username-input" placeholder="Nombre de Usuario">
             <br>
-            <button id="username-login-button">Iniciar Sesión</button>
+            <button onclick="signInWithUsername()">Iniciar Sesión</button>
         </div>
     </div>
 
-    <!-- Modal para Sign In -->
+    <!-- Modal para Iniciar Sesión -->
     <div id="sign-in-modal" class="modal">
         <div class="modal-content">
             <h2>Iniciar Sesión</h2>
-            <button class="button-google" id="google-login-button">
+            <button class="button-google" onclick="signInWithGoogle()">
                 <i class="fab fa-google"></i> Iniciar Sesión con Google
             </button>
-            <button class="button-username" id="username-login-option">
+            <button class="button-username" onclick="showUsernameModal()">
                 <i class="fas fa-user"></i> Iniciar Sesión sin Google
             </button>
         </div>
@@ -435,28 +404,57 @@
     <script>
     // Configuración de Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyBP3bJR_DA6EuV66Sze0vHLfo8QKNJ5_IQ",
-        authDomain: "machka-8432e.firebaseapp.com",
-        projectId: "machka-8432e",
-        storageBucket: "machka-8432e.appspot.com",
-        messagingSenderId: "421528005263",
-        appId: "1:421528005263:web:df708ddf04377600c55efa",
-        measurementId: "G-89B7M13GTS"
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_AUTH_DOMAIN",
+        projectId: "TU_PROJECT_ID",
+        storageBucket: "TU_STORAGE_BUCKET",
+        messagingSenderId: "TU_MESSAGING_SENDER_ID",
+        appId: "TU_APP_ID",
+        measurementId: "TU_MEASUREMENT_ID"
     };
 
-    // Inicializar Firebase (asegurarse de que no se inicialice más de una vez)
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const auth = firebase.auth();
 
-    // Función para iniciar sesión con Google
+    function toggleDropdown(event) {
+        event.stopPropagation();
+        const menu = document.querySelector('.dropdown-menu');
+        if (menu) menu.classList.toggle('active');
+    }
+
+    function toggleUserDropdown() {
+        const dropdown = document.getElementById('user-dropdown');
+        if (dropdown) dropdown.classList.toggle('show');
+    }
+
+    function showSignInModal() {
+        const signInModal = document.getElementById('sign-in-modal');
+        const usernameModal = document.getElementById('username-modal');
+        if (signInModal) signInModal.style.display = 'block';
+        if (usernameModal) usernameModal.style.display = 'none';
+    }
+
+    function showUsernameModal() {
+        const signInModal = document.getElementById('sign-in-modal');
+        const usernameModal = document.getElementById('username-modal');
+        if (signInModal) signInModal.style.display = 'none';
+        if (usernameModal) usernameModal.style.display = 'block';
+    }
+
+    function closeAllModals() {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.style.display = 'none';
+        });
+    }
+
     function signInWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider)
             .then((result) => {
                 const userName = result.user.displayName;
-                // Guardar información del usuario en localStorage
                 localStorage.setItem('userType', 'google');
                 localStorage.setItem('userName', userName);
                 showMainContent(userName);
@@ -468,15 +466,6 @@
             });
     }
 
-    // Función para mostrar el modal de ingreso de nombre de usuario
-    function showUsernameModal() {
-        const signInModal = document.getElementById('sign-in-modal');
-        const usernameModal = document.getElementById('username-modal');
-        if (signInModal) signInModal.style.display = 'none';
-        if (usernameModal) usernameModal.style.display = 'block';
-    }
-
-    // Función para iniciar sesión con nombre de usuario
     function signInWithUsername() {
         const usernameInput = document.getElementById('username-input');
         if (!usernameInput) return;
@@ -485,16 +474,13 @@
             alert("Por favor, ingresa un nombre de usuario válido.");
             return;
         }
-        // Guardar en localStorage
         localStorage.setItem('userType', 'username');
         localStorage.setItem('userName', username);
-        // Cerrar modal y mostrar contenido principal
         const usernameModal = document.getElementById('username-modal');
         if (usernameModal) usernameModal.style.display = 'none';
         showMainContent(username);
     }
 
-    // Función para mostrar el contenido principal
     function showMainContent(userName) {
         const welcomeMessage = document.getElementById('welcome-message');
         if (welcomeMessage) {
@@ -507,7 +493,6 @@
         if (cerrarSesionBtn) cerrarSesionBtn.style.display = 'block';
     }
 
-    // Función para cerrar sesión
     function signOutUser() {
         const userType = localStorage.getItem('userType');
         if (userType === 'google') {
@@ -524,84 +509,22 @@
         }
     }
 
-    // Función para limpiar la sesión
     function clearSession() {
         localStorage.removeItem('userType');
         localStorage.removeItem('userName');
-
         const welcomeMessage = document.getElementById('welcome-message');
         if (welcomeMessage) welcomeMessage.innerText = 'Bienvenido';
-
         const iniciarSesionBtn = document.getElementById('iniciar-sesion');
         const cerrarSesionBtn = document.getElementById('cerrar-sesion');
         if (iniciarSesionBtn) iniciarSesionBtn.style.display = 'block';
         if (cerrarSesionBtn) cerrarSesionBtn.style.display = 'none';
-
         const userDropdown = document.getElementById('user-dropdown');
         if (userDropdown) userDropdown.classList.remove('show');
     }
 
-    // Función para alternar el menú desplegable del usuario
-    function toggleUserDropdown() {
-        const dropdown = document.getElementById('user-dropdown');
-        if (dropdown) dropdown.classList.toggle('show');
+    function signOut() {
+        signOutUser();
     }
-
-    // Función para alternar el menú desplegable en móviles
-    function toggleDropdown(event) {
-        event.stopPropagation();
-        const menu = document.querySelector('.dropdown-menu');
-        if (menu) menu.classList.toggle('active');
-    }
-
-    // Función para mostrar el modal de inicio de sesión
-    function showSignInModal() {
-        const signInModal = document.getElementById('sign-in-modal');
-        const usernameModal = document.getElementById('username-modal');
-        if (signInModal) signInModal.style.display = 'block';
-        if (usernameModal) usernameModal.style.display = 'none';
-    }
-
-    // Función para cerrar todos los modales
-    function closeAllModals() {
-        const modals = document.querySelectorAll('.modal');
-        modals.forEach(modal => {
-            modal.style.display = 'none';
-        });
-    }
-
-    // Cerrar dropdown y modales si se hace clic fuera
-    window.onclick = function(event) {
-        const dropdown = document.getElementById('user-dropdown');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        const signInModal = document.getElementById('sign-in-modal');
-        const usernameModal = document.getElementById('username-modal');
-
-        // Cerrar dropdown de usuario
-        if (!event.target.closest('.user-icon') && dropdown) {
-            dropdown.classList.remove('show');
-        }
-
-        // Cerrar dropdown de menú móvil
-        if (!event.target.closest('.hamburger-menu') && dropdownMenu && dropdownMenu.classList.contains('active')) {
-            dropdownMenu.classList.remove('active');
-        }
-
-        // Cerrar modales si se hace clic fuera del contenido
-        if (signInModal && event.target == signInModal) {
-            signInModal.style.display = "none";
-        }
-        if (usernameModal && event.target == usernameModal) {
-            usernameModal.style.display = "none";
-        }
-    };
-
-    // Cerrar modales al presionar la tecla Esc
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeAllModals();
-        }
-    });
 
     // Monitorear el estado de autenticación de Firebase
     auth.onAuthStateChanged(user => {
@@ -621,7 +544,7 @@
         }
     });
 
-    // Verificar si el usuario ya ha iniciado sesión al cargar la página
+    // Al cargar la página, verificar si ya hay sesión
     window.onload = function () {
         const userType = localStorage.getItem('userType');
         const userName = localStorage.getItem('userName');
@@ -631,59 +554,6 @@
             clearSession();
         }
     };
-
-    // Función para cerrar sesión desde el dropdown de usuario
-    function signOut() {
-        signOutUser();
-    }
-
-    // Asignar funciones globalmente
-    window.signInWithGoogle = signInWithGoogle;
-    window.showUsernameModal = showUsernameModal;
-    window.signInWithUsername = signInWithUsername;
-    window.toggleDropdown = toggleDropdown;
-    window.toggleUserDropdown = toggleUserDropdown;
-    window.signOut = signOut;
-    window.showSignInModal = showSignInModal;
-
-    // Asignar eventos después de que el DOM haya cargado completamente
-    document.addEventListener('DOMContentLoaded', () => {
-        const hamburgerMenu = document.querySelector('.hamburger-menu');
-        const userIcon = document.querySelector('.user-icon');
-        const iniciarSesionBtn = document.getElementById('iniciar-sesion');
-        const cerrarSesionBtn = document.getElementById('cerrar-sesion');
-        const googleLoginBtn = document.getElementById('google-login-button');
-        const usernameLoginOption = document.getElementById('username-login-option');
-        const usernameLoginButton = document.getElementById('username-login-button');
-
-        if (hamburgerMenu) {
-            hamburgerMenu.addEventListener('click', toggleDropdown);
-        }
-
-        if (userIcon) {
-            userIcon.addEventListener('click', toggleUserDropdown);
-        }
-
-        if (iniciarSesionBtn) {
-            iniciarSesionBtn.addEventListener('click', showSignInModal);
-        }
-
-        if (cerrarSesionBtn) {
-            cerrarSesionBtn.addEventListener('click', signOut);
-        }
-
-        if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', signInWithGoogle);
-        }
-
-        if (usernameLoginOption) {
-            usernameLoginOption.addEventListener('click', showUsernameModal);
-        }
-
-        if (usernameLoginButton) {
-            usernameLoginButton.addEventListener('click', signInWithUsername);
-        }
-    });
     </script>
 </body>
 </html>
