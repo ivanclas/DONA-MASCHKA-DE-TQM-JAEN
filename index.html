@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doña Maschka de TQM Jaén - Bienvenido</title>
+    <title>Doña Maschka de TQM Jaén - Información Nutricional</title>
     <!-- Iconos de Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="icon" href="iconoSombrero.png" type="image/png">
+    <!-- Incluir Chart.js y el plugin de datalabels -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
     <style>
-        /* Estilos globales */
+        /* Estilos Globales */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-color: #f7f3e9;
             color: #333;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         #main-content {
+            flex: 1;
             padding-top: 80px;
         }
         .navbar {
@@ -33,31 +41,39 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+        .navbar.scrolled {
+            background-color: #8b4513;
         }
         .navbar .logo {
             color: white;
-            font-size: 22px;
-            font-weight: bold;
+            font-size: 24px;
+            font-weight: 700;
             display: flex;
             align-items: center;
+            font-family: 'Montserrat', sans-serif;
         }
         .navbar .logo i {
-            margin-right: 8px;
+            margin-right: 10px;
         }
         .navbar-menu {
             list-style: none;
             display: flex;
-            gap: 10px;
+            gap: 15px;
         }
         .navbar-menu li a {
             color: white;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 16px;
             padding: 8px 12px;
             border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .navbar-menu li a:hover {
             background-color: #8b4513;
+            color: #fff8f0;
         }
         .hamburger-menu {
             display: none;
@@ -70,6 +86,7 @@
             width: 25px;
             background-color: white;
             margin: 4px 0;
+            transition: all 0.3s ease;
         }
         .dropdown-menu {
             display: none;
@@ -81,9 +98,13 @@
             width: 100%;
             padding: 0;
             z-index: 1000;
+            transition: max-height 0.3s ease;
+            overflow: hidden;
+            max-height: 0;
         }
         .dropdown-menu.active {
             display: flex;
+            max-height: 1000px; /* Suficiente para mostrar todos los elementos */
         }
         .dropdown-menu li a {
             display: block;
@@ -94,13 +115,15 @@
             text-align: center;
             border-top: 1px solid #8b4513;
             border-bottom: 1px solid #8b4513;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .dropdown-menu li a:hover {
             background-color: #8b4513;
+            color: #fff8f0;
         }
         .user-icon {
             color: white;
-            font-size: 20px;
+            font-size: 24px;
             cursor: pointer;
             position: relative;
         }
@@ -114,6 +137,13 @@
             border-radius: 5px;
             overflow: hidden;
             z-index: 1001;
+            min-width: 150px;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+        .user-dropdown.show {
+            display: block;
+            opacity: 1;
         }
         .user-dropdown a {
             display: block;
@@ -121,20 +151,17 @@
             padding: 10px 20px;
             text-decoration: none;
             cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .user-dropdown a:hover {
             background-color: #8b4513;
-        }
-
-        /* Clase añadida para mostrar el dropdown del usuario */
-        .user-dropdown.show {
-            display: block;
+            color: #fff8f0;
         }
 
         header {
             text-align: center;
-            padding: 50px 20px;
-            background-image: url('https://via.placeholder.com/1920x300');
+            padding: 100px 20px 50px 20px;
+            background-image: url('https://via.placeholder.com/1920x500');
             background-size: cover;
             background-position: center;
             color: white;
@@ -147,7 +174,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(165, 42, 42, 0.7);
+            background-color: rgba(165, 42, 42, 0.6);
             z-index: 1;
         }
         header h1, header p {
@@ -155,53 +182,64 @@
             z-index: 2;
         }
         header h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease;
         }
         header p {
-            font-size: 20px;
+            font-size: 24px;
+            animation: fadeInUp 1s ease;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
         .section {
             background-color: #fffaf0;
-            padding: 20px;
-            margin: 20px 0;
+            padding: 30px;
+            margin: 30px 0;
             border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideIn 1s ease;
         }
         .section h2 {
             color: #a0522d;
-            font-size: 22px;
-            margin-bottom: 15px;
+            font-size: 28px;
+            margin-bottom: 20px;
             text-align: center;
+            font-family: 'Montserrat', sans-serif;
         }
         .section p {
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 18px;
+            line-height: 1.8;
             color: #555;
-            text-align: center;
+            text-align: justify;
         }
         .section img {
             width: 100%;
-            max-width: 300px;
+            max-width: 400px;
             height: auto;
             border-radius: 12px;
-            margin-bottom: 20px;
+            margin: 20px auto;
             display: block;
-            margin-left: auto;
-            margin-right: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .button-google {
+        .button-google, .button-username {
             display: inline-flex;
             align-items: center;
             gap: 10px;
             padding: 12px 20px;
             font-size: 16px;
             color: white;
-            background-color: #db4437;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -209,6 +247,10 @@
             font-weight: bold;
             margin-top: 20px;
             justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+        .button-google {
+            background-color: #db4437;
         }
         .button-google:hover {
             background-color: #c23321;
@@ -217,20 +259,7 @@
             font-size: 18px;
         }
         .button-username {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 20px;
-            font-size: 16px;
-            color: white;
             background-color: #555555;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 20px;
-            justify-content: center;
         }
         .button-username:hover {
             background-color: #333333;
@@ -256,41 +285,165 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.5s ease;
         }
         .modal-content {
             background-color: #fefefe;
             margin: 15% auto;
-            padding: 20px;
+            padding: 30px;
             border: 1px solid #888;
             width: 80%;
-            max-width: 400px;
+            max-width: 500px;
             border-radius: 10px;
             text-align: center;
+            position: relative;
+            animation: slideInModal 0.5s ease;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #a0522d;
+            font-family: 'Montserrat', sans-serif;
         }
         .modal-content input {
             width: 80%;
-            padding: 10px;
+            padding: 12px;
             margin: 15px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 16px;
         }
         .modal-content button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             background-color: #a0522d;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
         .modal-content button:hover {
             background-color: #8b4513;
         }
+
+        /* Animaciones para modales */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideInModal {
+            from { transform: translateY(-50px); }
+            to { transform: translateY(0); }
+        }
+
+        /* Estilos para los gráficos */
+        #mapa-conceptual, #grafico-barras {
+            text-align: center;
+        }
+        #mapa-conceptual canvas, #grafico-barras canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Nueva sección de Conclusión */
+        .conclusion {
+            background-color: #fffaf0;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideIn 1s ease;
+        }
+        .conclusion h2 {
+            color: #a0522d;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .conclusion p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #555;
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        /* Nueva Sección: Ayuda para Condiciones de Salud */
+        .health-help {
+            background-color: #fffaf0;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideIn 1s ease;
+        }
+        .health-help h2 {
+            color: #a0522d;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .health-help .health-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .health-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .health-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .health-card h3 {
+            color: #a0522d;
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .health-card p {
+            font-size: 16px;
+            color: #555;
+            text-align: justify;
+        }
+
+        /* Animaciones */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Media Queries */
         @media (max-width: 768px) {
             .navbar-menu {
                 display: none;
             }
             .hamburger-menu {
                 display: flex;
+            }
+            /* Reducción del tamaño de fuente y padding */
+            .section h2, .conclusion h2, .health-help h2 {
+                font-size: 22px;
+            }
+            .section p, .conclusion p, .health-card p {
+                font-size: 16px;
+            }
+            .section img, .health-card {
+                max-width: 100%;
+            }
+            .health-help .health-cards {
+                flex-direction: column;
+                align-items: center;
             }
         }
         @media (min-width: 769px) {
@@ -299,12 +452,11 @@
             }
         }
     </style>
-     
 </head>
 <body>
 
     <div id="main-content">
-        <nav class="navbar">
+        <nav class="navbar" id="navbar">
             <div class="logo">
                 <i class="fas fa-hat-cowboy"></i> Doña Maschka
             </div>
@@ -319,13 +471,19 @@
                 <li><a href="#vision"><i class="fas fa-eye"></i> Visión</a></li>
                 <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
                 <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
+                <li><a href="#mapa-conceptual"><i class="fas fa-chart-pie"></i> Contribución de Ingredientes</a></li>
+                <li><a href="#grafico-barras"><i class="fas fa-chart-bar"></i> Distribución de Macronutrientes</a></li>
+                <li><a href="#ayuda-salud"><i class="fas fa-plus-square"></i> Ayuda Salud</a></li>
             </ul>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" id="dropdown-menu">
                 <li><a href="#nosotros"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
                 <li><a href="#mision"><i class="fas fa-bullseye"></i> Misión</a></li>
                 <li><a href="#vision"><i class="fas fa-eye"></i> Visión</a></li>
                 <li><a href="#contacto"><i class="fas fa-phone"></i> Contacto</a></li>
                 <li><a href="#catalogo"><i class="fas fa-box"></i> Catálogo</a></li>
+                <li><a href="#mapa-conceptual"><i class="fas fa-chart-pie"></i> Contribución de Ingredientes</a></li>
+                <li><a href="#grafico-barras"><i class="fas fa-chart-bar"></i> Distribución de Macronutrientes</a></li>
+                <li><a href="#ayuda-salud"><i class="fas fa-plus-square"></i> Ayuda Salud</a></li>
             </ul>
             <div class="user-icon" onclick="toggleUserDropdown()">
                 <i class="fas fa-user-circle"></i>
@@ -337,7 +495,7 @@
         </nav>
 
         <header>
-            <h1 id="welcome-message">Bienvenido(a)</h1>
+            <h1 id="welcome-message">Bienvenido(a) a Doña Maschka</h1>
             <p>Productos de calidad para el bienestar de todos</p>
         </header>
 
@@ -345,34 +503,136 @@
             <section id="nosotros" class="section">
                 <h2>Sobre Nosotros</h2>
                 <img src="NOSOTROS.png" alt="Sobre Nosotros">
-                <p>En Doña Maschka, estamos comprometidos con ofrecer productos de calidad que mejoren la vida de nuestros clientes.</p>
+                <p>
+                    En Doña Maschka, nos dedicamos a ofrecer una amplia variedad de harinas nutritivas y de alta calidad que promueven una alimentación saludable y equilibrada. Nuestro compromiso es proporcionar productos que no solo sean deliciosos, sino que también aporten beneficios nutricionales significativos a nuestros clientes.
+                </p>
+                <p>
+                    Nuestra trayectoria en el mercado de Jaén y más allá nos ha permitido establecer relaciones sólidas con proveedores confiables, garantizando que cada ingrediente que utilizamos cumpla con los más altos estándares de calidad. Creemos en la importancia de la transparencia y la educación nutricional, por lo que nos esforzamos por ofrecer información detallada sobre nuestros productos para que puedas tomar decisiones informadas sobre tu alimentación.
+                </p>
             </section>
 
             <section id="mision" class="section">
                 <h2>Misión</h2>
                 <img src="mision.jpg" alt="Nuestra Misión">
-                <p>Nuestra misión es satisfacer las necesidades de nuestros clientes a través de productos innovadores.</p>
+                <p>
+                    Nuestra misión es satisfacer las necesidades de nuestros clientes a través de productos innovadores y nutritivos. Nos comprometemos a mejorar la calidad de vida de las personas proporcionando harinas que son no solo sabrosas sino también ricas en nutrientes esenciales, contribuyendo así a una dieta equilibrada y saludable.
+                </p>
+                <p>
+                    Trabajamos incansablemente para mantener la excelencia en cada etapa de nuestro proceso, desde la selección de ingredientes hasta la entrega final de nuestros productos. Nuestra misión es ser un referente en el sector alimenticio, reconocidos por nuestra dedicación a la calidad, la salud y el bienestar de nuestros clientes.
+                </p>
             </section>
 
             <section id="vision" class="section">
                 <h2>Visión</h2>
                 <img src="vision.jpg" alt="Nuestra Visión">
-                <p>Ser reconocidos como una empresa líder en el sector.</p>
+                <p>
+                    Aspiramos a ser reconocidos como la empresa líder en el sector de productos nutricionales en Jaén y más allá. Nuestra visión es expandir nuestra presencia en el mercado, ofreciendo una gama más amplia de productos que promuevan estilos de vida saludables y sostenibles.
+                </p>
+                <p>
+                    Nos visualizamos como una empresa innovadora que anticipa y responde a las necesidades cambiantes de nuestros clientes. Buscamos constantemente mejorar nuestros productos y procesos, adoptando nuevas tecnologías y prácticas sostenibles para asegurar que podamos seguir ofreciendo lo mejor a nuestros consumidores.
+                </p>
             </section>
 
             <section id="catalogo" class="section">
                 <h2>Catálogo</h2>
                 <img src="catalogo.jpg" alt="Catálogo de Productos">
-                <p>Haz clic para ver nuestro catálogo completo.</p>
-                <a href="catalago.html" class="button-google">
+                <p>Descubre nuestra amplia gama de productos nutritivos y de alta calidad.</p>
+                <a href="catalogo.html" class="button-google">
                     <i class="fas fa-box"></i> Ver Catálogo
                 </a>
             </section>
 
-            <section id="contacto" class="section">
-                <h2>Contacto</h2>
-                <img src="contacto.jpg" alt="Contacto">
-                <p>¿Tienes preguntas? Contáctanos al 947 424 087</p>
+            <!-- Nueva Sección: Mapa Conceptual (Gráfico de Pastel) -->
+            <section id="mapa-conceptual" class="section">
+                <h2>Contribución de Ingredientes al Producto</h2>
+                <canvas id="ingredientesPieChart" width="400" height="400"></canvas>
+            </section>
+
+            <!-- Nueva Sección: Gráfico de Barras para Macronutrientes -->
+            <section id="grafico-barras" class="section">
+                <h2>Distribución de Macronutrientes</h2>
+                <canvas id="macronutrientesBarChart" width="400" height="400"></canvas>
+            </section>
+
+            <!-- Nueva Sección: Ayuda para Condiciones de Salud -->
+            <section id="ayuda-salud" class="section health-help">
+                <h2>Ayuda en Casos de Salud</h2>
+                <div class="health-cards">
+                    <div class="health-card">
+                        <h3>Gastritis</h3>
+                        <p>
+                            Nuestra mezcla ayuda a calmar el estómago y reducir la inflamación, proporcionando nutrientes esenciales que promueven la recuperación y el bienestar digestivo.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Colon Tóxico</h3>
+                        <p>
+                            Con ingredientes ricos en fibra y antioxidantes, nuestra mezcla favorece la limpieza del colon y mejora la salud intestinal.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Hemorroides</h3>
+                        <p>
+                            Los componentes antiinflamatorios de nuestra mezcla ayudan a reducir el dolor y la hinchazón asociados con las hemorroides.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Bochornos</h3>
+                        <p>
+                            Nuestra fórmula equilibrada contribuye a regular la temperatura corporal y aliviar los bochornos de manera natural.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Anemia</h3>
+                        <p>
+                            Rica en hierro y vitaminas esenciales, nuestra mezcla ayuda a combatir la anemia y mejora la producción de glóbulos rojos.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Tónico Cerebral</h3>
+                        <p>
+                            Ingredientes como la soya y la quinua aportan nutrientes que mejoran la función cerebral y aumentan la concentración.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Tiroide</h3>
+                        <p>
+                            Nutrientes como el zinc y el selenio en nuestra mezcla apoyan el funcionamiento saludable de la tiroides.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Brinda Energía</h3>
+                        <p>
+                            Los carbohidratos complejos y proteínas en nuestra mezcla proporcionan una liberación sostenida de energía para mantenerte activo durante todo el día.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Dolor de Huesos</h3>
+                        <p>
+                            Con calcio y magnesio, nuestra mezcla contribuye a fortalecer los huesos y reducir el dolor asociado con la osteoartritis.
+                        </p>
+                    </div>
+                    <div class="health-card">
+                        <h3>Reduce Tallas</h3>
+                        <p>
+                            La fibra y los nutrientes esenciales ayudan a mantener una digestión saludable, lo que puede contribuir a la reducción de tallas de manera natural.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Nueva Sección: Conclusión -->
+            <section class="conclusion">
+                <h2>La Importancia de la Información Nutricional</h2>
+                <p>
+                    En Doña Maschka, entendemos que la salud y el bienestar de nuestros clientes son prioritarios. Por ello, proporcionamos información nutricional detallada de cada uno de nuestros productos, permitiendo a nuestros clientes tomar decisiones informadas sobre los alimentos que consumen. Esta transparencia no solo refuerza la confianza en nuestra marca, sino que también empodera a nuestros consumidores para que elijan productos que se alineen con sus objetivos de salud y nutrición.
+                </p>
+                <p>
+                    Al conocer el contenido de proteínas, carbohidratos, grasas, fibra y una variedad de vitaminas y minerales esenciales como el zinc, calcio, fósforo, magnesio y potasio, nuestros clientes pueden equilibrar mejor su dieta diaria. Esto es especialmente importante para aquellos que buscan mejorar su rendimiento físico, mantener un peso saludable o gestionar condiciones de salud específicas.
+                </p>
+                <p>
+                    Además, esta información destaca nuestro compromiso con la calidad y la excelencia. Nos enorgullece ofrecer productos que no solo son deliciosos, sino también nutritivos, contribuyendo así a una vida más saludable y equilibrada para nuestros clientes. Invitamos a todos a explorar nuestra información nutricional y descubrir cómo nuestros productos pueden ser una parte valiosa de su rutina diaria de alimentación.
+                </p>
             </section>
         </div>
 
@@ -404,10 +664,284 @@
         </div>
     </div>
 
-    <!-- Firebase App (Compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="procesar.js"></script>
+    <!-- Firebase App (Módulo) -->
+    <script type="module">
+        // Importa las funciones necesarias desde Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBP3bJR_DA6EuV66Sze0vHLfo8QKNJ5_IQ",
+            authDomain: "machka-8432e.firebaseapp.com",
+            projectId: "machka-8432e",
+            storageBucket: "machka-8432e.appspot.com",
+            messagingSenderId: "421528005263",
+            appId: "1:421528005263:web:df708ddf04377600c55efa",
+            measurementId: "G-89B7M13GTS"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Configura el proveedor de Google
+        const provider = new GoogleAuthProvider();
+
+        // Función para iniciar sesión con Google
+        window.signInWithGoogle = () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    // Manejar el resultado de la autenticación
+                    console.log("Usuario autenticado:", result.user);
+                    alert(`Bienvenido, ${result.user.displayName}!`);
+                    // Mostrar y ocultar botones según el estado de inicio de sesión
+                    document.getElementById('cerrar-sesion').style.display = 'block';
+                    document.getElementById('iniciar-sesion').style.display = 'none';
+                    // Actualizar mensaje de bienvenida
+                    document.getElementById('welcome-message').innerText = `Bienvenido(a), ${result.user.displayName}`;
+                    // Cerrar el dropdown
+                    toggleUserDropdown(false);
+                })
+                .catch((error) => {
+                    // Manejar errores
+                    console.error("Error al autenticar:", error);
+                    alert("Hubo un error al iniciar sesión. Por favor, intenta nuevamente.");
+                });
+        };
+
+        // Función para cerrar sesión con Firebase
+        window.signOut = () => {
+            signOut(auth).then(() => {
+                // Sign-out successful.
+                alert('Sesión cerrada correctamente.');
+                document.getElementById('cerrar-sesion').style.display = 'none';
+                document.getElementById('iniciar-sesion').style.display = 'block';
+                // Actualizar mensaje de bienvenida
+                document.getElementById('welcome-message').innerText = 'Bienvenido(a) a Doña Maschka';
+            }).catch((error) => {
+                // An error happened.
+                console.error("Error al cerrar sesión:", error);
+                alert("Hubo un error al cerrar sesión. Por favor, intenta nuevamente.");
+            });
+        };
+    </script>
+
+    <script>
+        // Funciones para manejar el menú desplegable
+        function toggleDropdown(event) {
+            event.stopPropagation(); // Evita que el evento burbujee
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            dropdownMenu.classList.toggle('active');
+        }
+
+        function toggleUserDropdown(forceState) {
+            const userDropdown = document.getElementById('user-dropdown');
+            if (typeof forceState === 'boolean') {
+                if (forceState) {
+                    userDropdown.classList.add('show');
+                } else {
+                    userDropdown.classList.remove('show');
+                }
+            } else {
+                userDropdown.classList.toggle('show');
+            }
+        }
+
+        // Funciones para manejar los modales
+        function showSignInModal() {
+            document.getElementById('sign-in-modal').style.display = 'block';
+            document.getElementById('username-modal').style.display = 'none';
+            // Cerrar el dropdown
+            toggleUserDropdown(false);
+        }
+
+        function showUsernameModal() {
+            document.getElementById('username-modal').style.display = 'block';
+            document.getElementById('sign-in-modal').style.display = 'none';
+            // Cerrar el dropdown
+            toggleUserDropdown(false);
+        }
+
+        function signInWithUsername() {
+            const username = document.getElementById('username-input').value.trim();
+            if(username) {
+                alert('Bienvenido, ' + username + '!');
+                document.getElementById('sign-in-modal').style.display = 'none';
+                document.getElementById('cerrar-sesion').style.display = 'block';
+                document.getElementById('iniciar-sesion').style.display = 'none';
+                // Actualizar mensaje de bienvenida
+                document.getElementById('welcome-message').innerText = `Bienvenido(a), ${username}`;
+            } else {
+                alert('Por favor, ingresa un nombre de usuario.');
+            }
+        }
+
+        // Cerrar modales al hacer clic fuera de ellos
+        window.onclick = function(event) {
+            const signInModal = document.getElementById('sign-in-modal');
+            const usernameModal = document.getElementById('username-modal');
+            const userDropdown = document.getElementById('user-dropdown');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const hamburgerMenu = document.querySelector('.hamburger-menu');
+
+            if (event.target == signInModal) {
+                signInModal.style.display = 'none';
+            }
+            if (event.target == usernameModal) {
+                usernameModal.style.display = 'none';
+            }
+            if (!event.target.matches('.user-icon') && !event.target.closest('.user-dropdown')) {
+                userDropdown.classList.remove('show');
+            }
+            if (!event.target.matches('.hamburger-menu') && !event.target.closest('.dropdown-menu')) {
+                dropdownMenu.classList.remove('active');
+            }
+        }
+
+        // Cerrar el menú desplegable al seleccionar una opción
+        document.querySelectorAll('.navbar-menu li a, .dropdown-menu li a').forEach(function(element) {
+            element.addEventListener('click', function() {
+                const dropdownMenu = document.getElementById('dropdown-menu');
+                if (dropdownMenu.classList.contains('active')) {
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+        });
+
+        // Cambiar el color de la navbar al hacer scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+
+    <!-- Script para los gráficos -->
+    <script>
+        // Gráfico de Pastel: Contribución de Ingredientes
+        const ctxPie = document.getElementById('ingredientesPieChart').getContext('2d');
+        const ingredientesPieChart = new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: [
+                    'Harina de Trigo',
+                    'Harina de Maíz',
+                    'Harina de Soya',
+                    'Harina de Maca',
+                    'Harina de Quinua',
+                    'Harina de Kiwicha',
+                    'Harina de Algarrobina',
+                    'Harina de Avena',
+                    'Harina de Habas',
+                    'Harina de Chía',
+                    'Harina de Linaza'
+                ],
+                datasets: [{
+                    data: [7, 3, 4, 4, 4, 4, 4, 6, 4, 4, 4], // MEZCLA Kg
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40',
+                        '#C9CBCF',
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 20,
+                            padding: 15
+                        }
+                    },
+                    title: {
+                        display: false,
+                        text: 'Contribución de Ingredientes'
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        formatter: (value, context) => {
+                            let sum = 0;
+                            let dataArr = context.chart.data.datasets[0].data;
+                            dataArr.map(data => {
+                                sum += data;
+                            });
+                            let percentage = (value * 100 / sum).toFixed(2)+"%";
+                            return percentage;
+                        },
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Barras: Distribución de Macronutrientes
+        const ctxBar = document.getElementById('macronutrientesBarChart').getContext('2d');
+        const macronutrientesBarChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
+                datasets: [{
+                    label: 'En 100 gr',
+                    data: [11.7, 48.3, 8.7], // Valores de ejemplo, ajusta según tus datos
+                    backgroundColor: '#36A2EB'
+                },
+                {
+                    label: 'Ración 40 gr.',
+                    data: [4.7, 19.3, 3.5], // Valores de ejemplo, ajusta según tus datos
+                    backgroundColor: '#FF6384'
+                }]
+            },
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Distribución de Macronutrientes'
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'start',
+                        formatter: (value, context) => {
+                            return value;
+                        },
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 
 </body>
 </html>
