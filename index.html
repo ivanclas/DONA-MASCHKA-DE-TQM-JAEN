@@ -121,11 +121,26 @@
             background-color: #8b4513;
             color: #fff8f0;
         }
+        .user-icon-container {
+            position: relative;
+            display: inline-block;
+        }
         .user-icon {
             color: white;
             font-size: 24px;
             cursor: pointer;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #a0522d;
+            transition: background-color 0.3s ease;
+        }
+        .user-icon:hover {
+            background-color: #8b4513;
         }
         .user-dropdown {
             display: none;
@@ -485,8 +500,10 @@
                 <li><a href="#grafico-barras"><i class="fas fa-chart-bar"></i> Distribución de Macronutrientes</a></li>
                 <li><a href="#ayuda-salud"><i class="fas fa-plus-square"></i> Ayuda Salud</a></li>
             </ul>
-            <div class="user-icon" onclick="toggleUserDropdown()">
-                <i class="fas fa-user-circle"></i>
+            <div class="user-icon-container">
+                <div class="user-icon" onclick="toggleUserDropdown(event)">
+                    <i class="fas fa-user-circle"></i>
+                </div>
                 <div class="user-dropdown" id="user-dropdown">
                     <a href="#" id="iniciar-sesion" onclick="showSignInModal()">Iniciar Sesión</a>
                     <a href="#" id="cerrar-sesion" onclick="signOut()" style="display: none;">Cerrar Sesión</a>
@@ -538,7 +555,7 @@
                 <img src="catalogo.jpg" alt="Catálogo de Productos">
                 <p>Descubre nuestra amplia gama de productos nutritivos y de alta calidad.</p>
                 <a href="catalogo.html" class="button-google">
-                    <i class="fas fa-box"></i> Ver Catálogo
+                    Ver Catálogo
                 </a>
             </section>
 
@@ -656,10 +673,10 @@
         <div class="modal-content">
             <h2>Iniciar Sesión</h2>
             <button class="button-google" onclick="signInWithGoogle()">
-                <i class="fab fa-google"></i> Iniciar Sesión con Google
+                Iniciar Sesión con Google
             </button>
             <button class="button-username" onclick="showUsernameModal()">
-                <i class="fas fa-user"></i> Iniciar Sesión sin Google
+                Iniciar Sesión sin Google
             </button>
         </div>
     </div>
@@ -668,7 +685,7 @@
     <script type="module">
         // Importa las funciones necesarias desde Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
         // Tu configuración de Firebase
         const firebaseConfig = {
@@ -694,14 +711,17 @@
                 .then((result) => {
                     // Manejar el resultado de la autenticación
                     console.log("Usuario autenticado:", result.user);
-                    alert(`Bienvenido, ${result.user.displayName}!`);
+                    // Actualizar mensaje de bienvenida
+                    document.getElementById('welcome-message').innerText = `Bienvenido(a), ${result.user.displayName}`;
                     // Mostrar y ocultar botones según el estado de inicio de sesión
                     document.getElementById('cerrar-sesion').style.display = 'block';
                     document.getElementById('iniciar-sesion').style.display = 'none';
-                    // Actualizar mensaje de bienvenida
-                    document.getElementById('welcome-message').innerText = `Bienvenido(a), ${result.user.displayName}`;
+                    // Guardar estado en localStorage
+                    localStorage.setItem('customUsername', '');
                     // Cerrar el dropdown
                     toggleUserDropdown(false);
+                    // Cerrar el modal
+                    document.getElementById('sign-in-modal').style.display = 'none';
                 })
                 .catch((error) => {
                     // Manejar errores
@@ -719,12 +739,39 @@
                 document.getElementById('iniciar-sesion').style.display = 'block';
                 // Actualizar mensaje de bienvenida
                 document.getElementById('welcome-message').innerText = 'Bienvenido(a) a Doña Maschka';
+                // Eliminar nombre de usuario personalizado de localStorage
+                localStorage.removeItem('customUsername');
             }).catch((error) => {
                 // An error happened.
                 console.error("Error al cerrar sesión:", error);
                 alert("Hubo un error al cerrar sesión. Por favor, intenta nuevamente.");
             });
         };
+
+        // Listener para mantener la sesión activa
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuario está firmado en Firebase
+                document.getElementById('cerrar-sesion').style.display = 'block';
+                document.getElementById('iniciar-sesion').style.display = 'none';
+                document.getElementById('welcome-message').innerText = `Bienvenido(a), ${user.displayName}`;
+                // Limpiar nombre de usuario personalizado si existe
+                localStorage.setItem('customUsername', '');
+            } else {
+                // Usuario no está firmado en Firebase
+                // Verificar si hay un nombre de usuario personalizado en localStorage
+                const customUsername = localStorage.getItem('customUsername');
+                if (customUsername) {
+                    document.getElementById('cerrar-sesion').style.display = 'block';
+                    document.getElementById('iniciar-sesion').style.display = 'none';
+                    document.getElementById('welcome-message').innerText = `Bienvenido(a), ${customUsername}`;
+                } else {
+                    document.getElementById('cerrar-sesion').style.display = 'none';
+                    document.getElementById('iniciar-sesion').style.display = 'block';
+                    document.getElementById('welcome-message').innerText = 'Bienvenido(a) a Doña Maschka';
+                }
+            }
+        });
     </script>
 
     <script>
@@ -735,7 +782,8 @@
             dropdownMenu.classList.toggle('active');
         }
 
-        function toggleUserDropdown(forceState) {
+        function toggleUserDropdown(event, forceState) {
+            if (event) event.stopPropagation(); // Evita que el evento burbujee
             const userDropdown = document.getElementById('user-dropdown');
             if (typeof forceState === 'boolean') {
                 if (forceState) {
@@ -753,25 +801,30 @@
             document.getElementById('sign-in-modal').style.display = 'block';
             document.getElementById('username-modal').style.display = 'none';
             // Cerrar el dropdown
-            toggleUserDropdown(false);
+            toggleUserDropdown(null, false);
         }
 
         function showUsernameModal() {
             document.getElementById('username-modal').style.display = 'block';
             document.getElementById('sign-in-modal').style.display = 'none';
             // Cerrar el dropdown
-            toggleUserDropdown(false);
+            toggleUserDropdown(null, false);
         }
 
         function signInWithUsername() {
             const username = document.getElementById('username-input').value.trim();
             if(username) {
-                alert('Bienvenido, ' + username + '!');
-                document.getElementById('sign-in-modal').style.display = 'none';
-                document.getElementById('cerrar-sesion').style.display = 'block';
-                document.getElementById('iniciar-sesion').style.display = 'none';
+                // Guardar nombre de usuario en localStorage
+                localStorage.setItem('customUsername', username);
                 // Actualizar mensaje de bienvenida
                 document.getElementById('welcome-message').innerText = `Bienvenido(a), ${username}`;
+                // Mostrar y ocultar botones según el estado de inicio de sesión
+                document.getElementById('cerrar-sesion').style.display = 'block';
+                document.getElementById('iniciar-sesion').style.display = 'none';
+                // Cerrar el modal
+                document.getElementById('username-modal').style.display = 'none';
+                // Cerrar el dropdown
+                toggleUserDropdown(null, false);
             } else {
                 alert('Por favor, ingresa un nombre de usuario.');
             }
@@ -783,7 +836,6 @@
             const usernameModal = document.getElementById('username-modal');
             const userDropdown = document.getElementById('user-dropdown');
             const dropdownMenu = document.getElementById('dropdown-menu');
-            const hamburgerMenu = document.querySelector('.hamburger-menu');
 
             if (event.target == signInModal) {
                 signInModal.style.display = 'none';
@@ -791,10 +843,10 @@
             if (event.target == usernameModal) {
                 usernameModal.style.display = 'none';
             }
-            if (!event.target.matches('.user-icon') && !event.target.closest('.user-dropdown')) {
+            if (!event.target.closest('.user-icon-container')) {
                 userDropdown.classList.remove('show');
             }
-            if (!event.target.matches('.hamburger-menu') && !event.target.closest('.dropdown-menu')) {
+            if (!event.target.closest('.hamburger-menu') && !event.target.closest('.dropdown-menu')) {
                 dropdownMenu.classList.remove('active');
             }
         }
@@ -859,7 +911,7 @@
                     borderWidth: 2
                 }]
             },
-            plugins: [ChartDataLabels],
+            // Eliminamos el plugin datalabels para este gráfico
             options: {
                 responsive: true,
                 plugins: {
@@ -873,22 +925,6 @@
                     title: {
                         display: false,
                         text: 'Contribución de Ingredientes'
-                    },
-                    datalabels: {
-                        color: '#fff',
-                        formatter: (value, context) => {
-                            let sum = 0;
-                            let dataArr = context.chart.data.datasets[0].data;
-                            dataArr.map(data => {
-                                sum += data;
-                            });
-                            let percentage = (value * 100 / sum).toFixed(2)+"%";
-                            return percentage;
-                        },
-                        font: {
-                            weight: 'bold',
-                            size: 14
-                        }
                     }
                 }
             }
