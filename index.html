@@ -438,6 +438,31 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Botón Flotante de WhatsApp */
+        .whatsapp-button {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25D366;
+            color: white;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 1000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .whatsapp-button:hover {
+            background-color: #128C7E;
+            transform: scale(1.1);
+        }
+
         /* Media Queries */
         @media (max-width: 768px) {
             .navbar-menu {
@@ -459,6 +484,13 @@
             .health-help .health-cards {
                 flex-direction: column;
                 align-items: center;
+            }
+            .whatsapp-button {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 24px;
             }
         }
         @media (min-width: 769px) {
@@ -519,15 +551,15 @@
         <div class="container">
             <section id="nosotros" class="section">
                 <h2>Sobre Nosotros</h2>
-                <img src="NOSOTROS.png" alt="Sobre Nosotros">
+                <img src="NOSOTROS.png" alt="Producto ancestral de Doña Maschka para limpieza intestinal">
                 <p>
-                    En Doña Maschka, nos dedicamos a ofrecer una amplia variedad de harinas nutritivas y de alta calidad que promueven una alimentación saludable y equilibrada. Nuestro compromiso es proporcionar productos que no solo sean deliciosos, sino que también aporten beneficios nutricionales significativos a nuestros clientes.
+                    En Doña Maschka, ofrecemos un alimento ancestral creado especialmente para la limpieza fecal del estómago e intestinos. Nuestra fórmula única elimina materia fecal acumulada por más de dos años, promoviendo una digestión saludable y un bienestar general.
                 </p>
                 <p>
-                    Nuestra trayectoria en el mercado de Jaén y más allá nos ha permitido establecer relaciones sólidas con proveedores confiables, garantizando que cada ingrediente que utilizamos cumpla con los más altos estándares de calidad. Creemos en la importancia de la transparencia y la educación nutricional, por lo que nos esforzamos por ofrecer información detallada sobre nuestros productos para que puedas tomar decisiones informadas sobre tu alimentación.
+                    Elaborado con ingredientes naturales seleccionados cuidadosamente, nuestro producto no solo purifica el sistema digestivo, sino que también aporta nutrientes esenciales para una alimentación equilibrada. Nos comprometemos con la tradición y la calidad, trabajando con comunidades locales para preservar métodos de preparación auténticos que garantizan la efectividad y pureza de nuestros productos.
                 </p>
             </section>
-
+        
             <section id="mision" class="section">
                 <h2>Misión</h2>
                 <img src="mision.jpg" alt="Nuestra Misión">
@@ -673,13 +705,18 @@
         <div class="modal-content">
             <h2>Iniciar Sesión</h2>
             <button class="button-google" onclick="signInWithGoogle()">
-                Iniciar Sesión con Google
+                <i class="fab fa-google"></i> Iniciar Sesión con Google
             </button>
             <button class="button-username" onclick="showUsernameModal()">
-                Iniciar Sesión sin Google
+                <i class="fas fa-user"></i> Iniciar Sesión sin Google
             </button>
         </div>
     </div>
+
+    <!-- Botón Flotante de WhatsApp -->
+    <a href="https://wa.me/56947424087" class="whatsapp-button" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <!-- Firebase App (Módulo) -->
     <script type="module">
